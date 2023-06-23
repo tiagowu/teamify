@@ -5,18 +5,18 @@ const userSchema = new mongoose.Schema(
   {
     fullName: {
       type: String,
-      required: true,
+      required: [true, "Please provide your full name."],
     },
     email: {
       type: String,
-      required: [true, "Please enter an email"],
+      required: [true, "Please provide an email address."],
       unique: true,
       lowercase: true,
     },
     password: {
       type: String,
-      required: [true, "Please enter a password"],
-      minlength: [6, "Minimum password length is 6 characters"],
+      required: [true, "Please provide a password."],
+      minlength: [6, "The password must be at least 6 characters long."],
     },
   },
   { timestamps: true }
