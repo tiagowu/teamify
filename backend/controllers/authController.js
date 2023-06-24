@@ -64,6 +64,25 @@ const authController = {
       return res.status(500).json({ error: "Internal server error. Please try again later." });
     }
   },
+  refreshToken: async (req, res) => {
+    try {
+      const refreshToken = req.cookies.refreshtoken;
+      if (!refreshToken) {
+        return res.status(401).json({ error: "Refresh token not found. Please log in again." });
+      }
+
+      const decoded = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET);
+      if (!decoded) {
+        return res.status(401).json({ error: "Invalid refresh token. Please log in again." });
+      }
+
+      const newAccessToken = createAccessToken({ id: decoded.id });
+
+      return res.status(200).json({ accessToken: newAccessToken });
+    } catch (err) {
+      return res.status(500).json({ error: err.message });
+    }
+  },
 };
 
 const createAccessToken = (payload) => {
