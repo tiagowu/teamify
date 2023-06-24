@@ -40,6 +40,12 @@ const authController = {
       const accessToken = createAccessToken({ id: user._id });
       const refreshToken = createRefreshToken({ id: user._id });
 
+      res.cookie("refreshtoken", refreshToken, {
+        httpOnly: true,
+        path: "/api/refresh_token",
+        maxAge: 30 * 24 * 60 * 60 * 1000,
+      });
+
       return res.status(200).json({ message: "Login successful", accessToken: accessToken, refreshToken: refreshToken });
     } catch (err) {
       return res.status(500).json({ error: "Internal server error. Please try again later." });
