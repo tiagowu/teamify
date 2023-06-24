@@ -1,4 +1,5 @@
 const Users = require("../models/userModel");
+const jwt = require("jsonwebtoken");
 
 const authController = {
   signup: async (req, res) => {
@@ -36,11 +37,22 @@ const authController = {
         return res.status(401).json({ error: "Invalid email or password. Please try again." });
       }
 
-      return res.status(200).json({ message: "Login successful" });
+      const accessToken = createAccessToken({ id: user._id });
+      const refreshToken = createRefreshToken({ id: user._id });
+
+      return res.status(200).json({ message: "Login successful", accessToken: accessToken, refreshToken: refreshToken });
     } catch (err) {
       return res.status(500).json({ error: "Internal server error. Please try again later." });
     }
   },
+};
+
+const createAccessToken = (payload) => {
+  return jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET, { expiresIn: process.env.ACCESS_TOKEN_EXPIRY });
+};
+
+const createRefreshToken = (payload) => {
+  return jwt.sign(payload, process.env.REFRESH_TOKEN_SECRET, { expiresIn: process.env.REFRESH_TOKEN_EXPIRY });
 };
 
 module.exports = authController;
