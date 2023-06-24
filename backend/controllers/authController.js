@@ -51,6 +51,19 @@ const authController = {
       return res.status(500).json({ error: "Internal server error. Please try again later." });
     }
   },
+  logout: async (req, res) => {
+    try {
+      const refreshToken = req.cookies.refreshtoken;
+      if (!refreshToken) {
+        return res.status(401).json({ error: "No refresh token found. User is not authenticated." });
+      }
+
+      res.clearCookie("refreshtoken", { path: "/api/refresh_token" });
+      return res.json({ message: "Logged out successfully." });
+    } catch (err) {
+      return res.status(500).json({ error: "Internal server error. Please try again later." });
+    }
+  },
 };
 
 const createAccessToken = (payload) => {
