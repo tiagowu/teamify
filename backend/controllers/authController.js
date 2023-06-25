@@ -46,7 +46,7 @@ const authController = {
         maxAge: 30 * 24 * 60 * 60 * 1000,
       });
 
-      return res.status(200).json({ message: "Logged in successfully", accessToken: accessToken, refreshToken: refreshToken });
+      return res.status(200).json({ message: "Logged in successfully.", accessToken: accessToken, refreshToken: refreshToken });
     } catch (err) {
       return res.status(500).json({ error: "Internal server error. Please try again later." });
     }
