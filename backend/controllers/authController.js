@@ -1,4 +1,4 @@
-const Users = require("../models/userModel");
+const User = require("../models/userModel");
 const jwt = require("jsonwebtoken");
 
 const authController = {
@@ -6,15 +6,15 @@ const authController = {
     try {
       const { fullName, email, password } = req.body;
 
-      const existingUser = await Users.findOne({ email });
+      const existingUser = await User.findOne({ email });
       if (existingUser) {
         return res.status(409).json({ error: "Email already exists. Please choose a different email." });
       }
 
-      const newUser = new Users({ fullName, email, password });
+      const newUser = new User({ fullName, email, password });
       await newUser.save();
 
-      return res.status(201).json({ message: "Registration successful" });
+      return res.status(201).json({ message: "Registered successfully" });
     } catch (err) {
       if (err.name === "ValidationError") {
         const validationErrors = Object.values(err.errors).map((error) => error.message);
@@ -27,7 +27,7 @@ const authController = {
     try {
       const { email, password } = req.body;
 
-      const user = await Users.findOne({ email });
+      const user = await User.findOne({ email });
       if (!user) {
         return res.status(401).json({ error: "Invalid email or password. Please try again." });
       }
@@ -46,7 +46,7 @@ const authController = {
         maxAge: 30 * 24 * 60 * 60 * 1000,
       });
 
-      return res.status(200).json({ message: "Login successful", accessToken: accessToken, refreshToken: refreshToken });
+      return res.status(200).json({ message: "Logged in successfully", accessToken: accessToken, refreshToken: refreshToken });
     } catch (err) {
       return res.status(500).json({ error: "Internal server error. Please try again later." });
     }
