@@ -2,13 +2,16 @@ require("dotenv").config();
 const express = require("express");
 const mongoose = require("mongoose");
 const cookieparser = require("cookie-parser");
+
 const authRouter = require("./routers/authRouter");
+const teamRouter = require("./routers/teamRouter");
 
 const app = express();
 app.use(express.json());
 app.use(cookieparser());
 
 app.use("/api", authRouter);
+app.use("/api", teamRouter);
 
 const port = process.env.PORT || 5000;
 const mongoURI = process.env.MONGO_URI;
