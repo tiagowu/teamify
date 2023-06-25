@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
+const Schema = mongoose.Schema;
 
 const userSchema = new mongoose.Schema(
   {
@@ -18,6 +19,12 @@ const userSchema = new mongoose.Schema(
       required: [true, "Please provide a password."],
       minlength: [6, "The password must be at least 6 characters long."],
     },
+    teams: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "Team",
+      },
+    ],
   },
   { timestamps: true }
 );
