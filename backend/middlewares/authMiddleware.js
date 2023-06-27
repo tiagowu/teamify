@@ -27,7 +27,7 @@ const authMiddleware = {
       req.user = user;
       next();
     } catch (err) {
-      return res.status(500).json({ error: err.message });
+      return res.status(500).json({ error: "Internal server error. Please try again later." });
     }
   },
 };
