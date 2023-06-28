@@ -18,6 +18,28 @@ const userController = {
       return res.status(500).json({ error: err.message });
     }
   },
+  joinTeamWithCode: async (req, res) => {
+    try {
+      const team = req.team;
+      const userId = req.user._id;
+
+      const isPending = team.pendingRequests.includes(userId);
+      if (isPending) {
+        return res.status(409).json({ error: "You have already requested to join the team." });
+      }
+
+      const member = await Member.findOne({ user: userId, team: team._id });
+      if (member) {
+        return res.status(400).json({ error: "You are already a member of the team." });
+      }
+
+      team.addRequest(userId);
+
+      return res.status(200).json({ message: "Request to join the team sent successfully." });
+    } catch (err) {
+      return res.status(500).json({ error: "Internal server error. Please try again later." });
+    }
+  },
 };
 
 module.exports = userController;
