@@ -5,9 +5,9 @@ const User = require("../models/userModel");
 const teamController = {
   deleteTeam: async (req, res) => {
     try {
-      const teamId = req.params.teamId;
+      const teamId = req.team._id;
 
-      const deletedTeam = await Team.findOneAndDelete({ _id: teamId });
+      const deletedTeam = await Team.findByIdAndDelete(teamId);
       if (!deletedTeam) {
         return res.status(404).json({ error: "Team not found or already deleted." });
       }
