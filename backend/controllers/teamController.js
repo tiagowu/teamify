@@ -23,6 +23,27 @@ const teamController = {
       return res.status(500).json({ error: "Internal server error. Please try again later." });
     }
   },
+  acceptPendingRequest: async (req, res) => {
+    try {
+      const userId = req.params.userId;
+      const team = req.team;
+
+      const request = team.pendingRequests.find((request) => request.equals(userId));
+      if (!request) {
+        return res.status(404).json({ error: "User is not requesting to join the team." });
+      }
+
+      const member = await Member.createMember(userId, team._id);
+      team.addMember(member._id);
+      team.removeRequest(userId);
+
+      await User.findByIdAndUpdate(userId, { $push: { teams: team._id } });
+
+      return res.status(200).json({ message: "User successfully added to the team." });
+    } catch (err) {
+      return res.status(500).json({ error: "Internal server error. Please try again later." });
+    }
+  },
 };
 
 module.exports = teamController;
