@@ -4,6 +4,7 @@ const mongoose = require("mongoose");
 const cookieparser = require("cookie-parser");
 
 const authRouter = require("./routers/authRouter");
+const userRouter = require("./routers/userRouter");
 const teamRouter = require("./routers/teamRouter");
 
 const app = express();
@@ -11,6 +12,7 @@ app.use(express.json());
 app.use(cookieparser());
 
 app.use("/api", authRouter);
+app.use("/api", userRouter);
 app.use("/api", teamRouter);
 
 const port = process.env.PORT || 5000;
