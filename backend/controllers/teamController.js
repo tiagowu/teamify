@@ -44,6 +44,33 @@ const teamController = {
       return res.status(500).json({ error: "Internal server error. Please try again later." });
     }
   },
+  removeMember: async (req, res) => {
+    try {
+      const memberId = req.member._id;
+      const teamId = member.team._id;
+      const userId = member.user._id;
+
+      const team = await Team.findById(teamId);
+      if (!team) {
+        return res.status(404).json({ error: "Team not found." });
+      }
+
+      if (!team.members.includes(memberId)) {
+        return res.status(400).json({ error: "Member does not belong to the team." });
+      }
+
+      team.removeMember(memberId);
+
+      const user = await User.findById(userId);
+      user.removeTeam(teamId);
+
+      await Member.findByIdAndDelete(memberId);
+
+      return res.status(200).json({ message: "Member removed successfully." });
+    } catch (err) {
+      return res.status(500).json({ error: "Internal server error. Please try again later." });
+    }
+  },
 };
 
 module.exports = teamController;
