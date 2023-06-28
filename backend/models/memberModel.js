@@ -18,4 +18,10 @@ const memberSchema = new Schema({
   },
 });
 
+memberSchema.statics.createMember = async function (userId, teamId, role) {
+  const member = new this({ user: userId, team: teamId, role });
+  await member.save();
+  return member;
+};
+
 module.exports = mongoose.model("Member", memberSchema);
