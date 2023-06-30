@@ -17,6 +17,12 @@ const teamSchema = new mongoose.Schema(
         ref: "Member",
       },
     ],
+    pendingRequests: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "User",
+      },
+    ],
     code: {
       type: String,
       unique: true,
