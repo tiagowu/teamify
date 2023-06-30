@@ -72,4 +72,14 @@ teamSchema.methods.removeMember = async function (memberId) {
   await this.save();
 };
 
+teamSchema.methods.addRequest = async function (userId) {
+  this.pendingRequests.push(userId);
+  await this.save();
+};
+
+teamSchema.methods.removeRequest = async function (userId) {
+  this.pendingRequests.pull(userId);
+  await this.save();
+};
+
 module.exports = mongoose.model("Team", teamSchema);
