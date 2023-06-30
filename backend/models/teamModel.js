@@ -62,4 +62,14 @@ teamSchema.statics.createTeam = async function (name, description) {
   return team;
 };
 
+teamSchema.methods.addMember = async function (memberId) {
+  this.members.push(memberId);
+  await this.save();
+};
+
+teamSchema.methods.removeMember = async function (memberId) {
+  this.members.pull(memberId);
+  await this.save();
+};
+
 module.exports = mongoose.model("Team", teamSchema);
