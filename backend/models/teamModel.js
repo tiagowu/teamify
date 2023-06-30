@@ -52,4 +52,14 @@ teamSchema.statics.generateUniqueCode = async function (length) {
   return code;
 };
 
+teamSchema.statics.createTeam = async function (name, description) {
+  const team = new this({
+    name,
+    description,
+    code: await this.generateUniqueCode(6),
+  });
+  await team.save();
+  return team;
+};
+
 module.exports = mongoose.model("Team", teamSchema);
