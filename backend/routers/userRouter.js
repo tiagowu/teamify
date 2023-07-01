@@ -7,5 +7,6 @@ router.use(authMiddleware.verifyToken);
 
 router.post("/teams", userController.createTeam);
 router.post("/teams/join", teamMiddleware.verifyTeamCode, userController.joinTeamWithCode);
+router.delete("/teams/:teamId/leave", teamMiddleware.verifyTeamId, userController.leaveTeam);
 
 module.exports = router;
