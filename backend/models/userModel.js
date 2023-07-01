@@ -46,4 +46,14 @@ userSchema.methods.comparePassword = async function (userPassword) {
   return await bcrypt.compare(userPassword, this.password);
 };
 
+userSchema.methods.addTeam = async function (teamId) {
+  this.teams.push(teamId);
+  await this.save();
+};
+
+userSchema.methods.removeTeam = async function (teamId) {
+  this.teams.pull(teamId);
+  await this.save();
+};
+
 module.exports = mongoose.model("User", userSchema);
