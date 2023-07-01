@@ -17,6 +17,26 @@ const teamMiddleware = {
       return res.status(500).json({ error: "Internal server error. Please try again later." });
     }
   },
+  verifyTeamCode: async (req, res, next) => {
+    try {
+      const { code } = req.body;
+
+      const codeRegex = /^[A-Z0-9]{6}$/;
+      if (!codeRegex.test(code)) {
+        return res.status(400).json({ error: "Invalid code format." });
+      }
+
+      const team = await Team.findOne({ code });
+      if (!team) {
+        return res.status(404).json({ error: "Team not found." });
+      }
+
+      req.team = team;
+      next();
+    } catch (err) {
+      return res.status(500).json({ error: "Internal server error. Please try again later." });
+    }
+  },
   checkPermission: (requiredRoles) => {
     return async (req, res, next) => {
       try {
