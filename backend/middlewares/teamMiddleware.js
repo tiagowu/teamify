@@ -37,6 +37,21 @@ const teamMiddleware = {
       return res.status(500).json({ error: "Internal server error. Please try again later." });
     }
   },
+  verifyMemberId: async (req, res, next) => {
+    try {
+      const memberId = req.params.memberId;
+
+      const member = await Member.findById(memberId);
+      if (!member) {
+        return res.status(404).json({ error: "Member not found." });
+      }
+
+      req.member = member;
+      next();
+    } catch (err) {
+      return res.status(500).json({ error: "Internal server error. Please try again later." });
+    }
+  },
   checkPermission: (requiredRoles) => {
     return async (req, res, next) => {
       try {
