@@ -1,5 +1,7 @@
+import Login from "./pages/Login";
+
 const App = () => {
-  return <div className="bg-blue-500 text-white p-4">Teamify</div>;
+  return <Login />;
 };
 
 export default App;
