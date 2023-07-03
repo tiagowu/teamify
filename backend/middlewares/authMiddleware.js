@@ -5,11 +5,11 @@ const authMiddleware = {
   verifyToken: async (req, res, next) => {
     try {
       const header = req.headers.authorization;
-      if (!header) {
+      if (!header || !header.startsWith("Bearer ")) {
         return res.status(401).json({ error: "Missing authorization header. Please authenticate." });
       }
 
-      const token = header.replace("Bearer ", "");
+      const token = header.split(" ")[1];
       if (!token) {
         return res.status(401).json({ error: "Missing or invalid token. Please authenticate." });
       }
