@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import { ReactComponent as Logo } from "../assets/Logo.svg";
 import InputField from "./InputField";
 
@@ -6,6 +6,11 @@ import { Link } from "react-router-dom";
 
 const Form = ({ fields, onSubmit, buttonText, text, link, linkText }) => {
   const [userData, setUserData] = useState(Object.fromEntries(fields.map((field) => [field.name, ""])));
+  const userRef = useRef();
+
+  useEffect(() => {
+    userRef.current.focus();
+  }, []);
 
   const isEmailValid = (email) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -25,7 +30,7 @@ const Form = ({ fields, onSubmit, buttonText, text, link, linkText }) => {
   return (
     <form className="flex flex-col justify-center max-w-lg w-full bg-white shadow-md rounded px-8 py-8" onSubmit={handleSubmit} noValidate>
       <Logo className="h-24 text-blue-400" />
-      {fields.map((field) => (
+      {fields.map((field, index) => (
         <InputField
           key={field.id}
           id={field.id}
@@ -34,6 +39,7 @@ const Form = ({ fields, onSubmit, buttonText, text, link, linkText }) => {
           name={field.name}
           value={userData[field.name]}
           handleChange={handleDataChange}
+          ref={index === 0 ? userRef : null}
         />
       ))}
       <button
