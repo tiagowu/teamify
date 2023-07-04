@@ -2,8 +2,10 @@ import { useState } from "react";
 import { ReactComponent as Logo } from "../assets/Logo.svg";
 import InputField from "./InputField";
 
+import { Link } from "react-router-dom";
+
 const Form = ({ fields, onSubmit, buttonText, text, link, linkText }) => {
-  const [userData, setUserData] = useState(fields.reduce((acc, field) => ({ ...acc, [field.name]: "" }), {}));
+  const [userData, setUserData] = useState(Object.fromEntries(fields.map((field) => [field.name, ""])));
 
   const isEmailValid = (email) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -42,7 +44,10 @@ const Form = ({ fields, onSubmit, buttonText, text, link, linkText }) => {
         {buttonText}
       </button>
       <p className="mx-auto p-2">
-        {text} {linkText}
+        {text}{" "}
+        <Link to={link} className="text-blue-600">
+          {linkText}
+        </Link>
       </p>
     </form>
   );
