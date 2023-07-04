@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { forwardRef, useState } from "react";
 
-const InputField = ({ id, type, label, name, value, handleChange }) => {
+const InputField = forwardRef((props, ref) => {
+  const { id, type, label, name, value, handleChange } = props;
   const [showPass, setShowPass] = useState(false);
 
   const togglePasswordVisibility = () => {
@@ -22,6 +23,7 @@ const InputField = ({ id, type, label, name, value, handleChange }) => {
           onChange={handleChange}
           spellCheck={false}
           autoComplete="off"
+          ref={ref}
           required
         />
         {type === "password" && (
@@ -32,6 +34,6 @@ const InputField = ({ id, type, label, name, value, handleChange }) => {
       </div>
     </div>
   );
-};
+});
 
 export default InputField;
