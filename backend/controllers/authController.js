@@ -53,23 +53,26 @@ const authController = {
 
       res.cookie("refresh_token", refreshToken, {
         httpOnly: true,
-        path: "/api/refresh_token",
-        maxAge: 30 * 24 * 60 * 60 * 1000,
+        path: "/api/refresh-token",
+        secure: true,
+        sameSite: "none",
+        maxAge: 7 * 24 * 60 * 60 * 1000,
       });
 
-      return res.status(200).json({ message: "Logged in successfully.", accessToken: accessToken, refreshToken: refreshToken });
+      return res.status(200).json({ message: "Logged in successfully.", user: user, accessToken: accessToken, refreshToken: refreshToken });
     } catch (err) {
       return res.status(500).json({ error: "Internal server error. Please try again later." });
     }
   },
   logout: async (req, res) => {
     try {
-      const refreshToken = req.cookies.refreshtoken;
-      if (!refreshToken) {
-        return res.status(401).json({ error: "No refresh token found. User is not authenticated." });
-      }
+      res.clearCookie("refresh_token", {
+        httpOnly: true,
+        path: "/api/refresh-token",
+        secure: true,
+        sameSite: "none",
+      });
 
-      res.clearCookie("refresh_token", { path: "/api/refresh_token" });
       return res.json({ message: "Logged out successfully." });
     } catch (err) {
       return res.status(500).json({ error: "Internal server error. Please try again later." });
