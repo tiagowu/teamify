@@ -14,7 +14,18 @@ const authController = {
       const newUser = new User({ fullName, email, password });
       await newUser.save();
 
-      return res.status(201).json({ message: "Registered successfully" });
+      const accessToken = createAccessToken({ id: newUser._id });
+      const refreshToken = createRefreshToken({ id: newUser._id });
+
+      res.cookie("refresh_token", refreshToken, {
+        httpOnly: true,
+        path: "/api/refresh-token",
+        secure: true,
+        sameSite: "none",
+        maxAge: 7 * 24 * 60 * 60 * 1000,
+      });
+
+      return res.status(201).json({ message: "Registered successfully", user: newUser, accessToken: accessToken });
     } catch (err) {
       if (err.name === "ValidationError") {
         const validationErrors = Object.values(err.errors).map((error) => error.message);
