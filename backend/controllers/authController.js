@@ -51,7 +51,7 @@ const authController = {
       const accessToken = createAccessToken({ id: user._id });
       const refreshToken = createRefreshToken({ id: user._id });
 
-      res.cookie("refreshtoken", refreshToken, {
+      res.cookie("refresh_token", refreshToken, {
         httpOnly: true,
         path: "/api/refresh_token",
         maxAge: 30 * 24 * 60 * 60 * 1000,
@@ -69,7 +69,7 @@ const authController = {
         return res.status(401).json({ error: "No refresh token found. User is not authenticated." });
       }
 
-      res.clearCookie("refreshtoken", { path: "/api/refresh_token" });
+      res.clearCookie("refresh_token", { path: "/api/refresh_token" });
       return res.json({ message: "Logged out successfully." });
     } catch (err) {
       return res.status(500).json({ error: "Internal server error. Please try again later." });
@@ -77,14 +77,14 @@ const authController = {
   },
   refreshToken: async (req, res) => {
     try {
-      const refreshToken = req.cookies.refreshtoken;
+      const refreshToken = req.cookies.refresh_token;
       if (!refreshToken) {
-        return res.status(401).json({ error: "Refresh token not found. Please log in again." });
+        return res.redirect("/");
       }
 
       const decoded = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET);
       if (!decoded) {
-        return res.status(401).json({ error: "Invalid refresh token. Please log in again." });
+        return res.redirect("/");
       }
 
       const newAccessToken = createAccessToken({ id: decoded.id });
