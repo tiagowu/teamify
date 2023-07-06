@@ -28,7 +28,7 @@ const Form = ({ fields, onSubmit, buttonText, text, link, linkText }) => {
   };
 
   return (
-    <form className="flex flex-col justify-center max-w-lg w-full bg-white shadow-md rounded px-8 py-8" onSubmit={handleSubmit} noValidate>
+    <form className="flex flex-col justify-center max-w-lg w-full bg-white shadow-md rounded p-8 m-8" onSubmit={handleSubmit} noValidate>
       <Logo className="h-24 text-blue-400" />
       {fields.map((field, index) => (
         <InputField
