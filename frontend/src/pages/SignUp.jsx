@@ -1,6 +1,6 @@
 import SignUpForm from "../components/SignUpForm";
 
-const Login = () => {
+const SignUp = () => {
   return (
     <div className="flex justify-center items-center h-screen bg-gray-100">
       <SignUpForm />
@@ -8,4 +8,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default SignUp;
