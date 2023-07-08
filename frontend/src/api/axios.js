@@ -1,5 +1,12 @@
 import axios from "axios";
 
+export const deleteData = async (url, post, token) => {
+  const res = await axios.delete(`/url/${url}`, post, {
+    headers: { Authorization: token },
+  });
+  return res;
+};
+
 export const getData = async (url, token) => {
   const res = await axios.get(`/api/${url}`, {
     headers: { Authorization: token },
