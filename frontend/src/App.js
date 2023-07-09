@@ -5,8 +5,10 @@ import Login from "./pages/Login";
 import Missing from "./pages/Missing";
 import SignUp from "./pages/SignUp";
 
+import PersistLogin from "./components/PersistLogin";
 import PrivateRoute from "./components/PrivateRoute";
 import PublicRoute from "./components/PublicRoute";
+import NavBar from "./components/NavBar";
 
 const App = () => {
   return (
@@ -17,7 +19,14 @@ const App = () => {
           <Route exact path="signup" element={<SignUp />} />
         </Route>
 
-        <Route element={<PrivateRoute />}>
+        <Route
+          element={
+            <>
+              <NavBar />
+              <PrivateRoute />
+            </>
+          }
+        >
           <Route exact path="/dashboard" element={<Dashboard />} />
         </Route>
         <Route exact path="*" element={<Missing />} />
