@@ -5,6 +5,7 @@ import Login from "./pages/Login";
 import Missing from "./pages/Missing";
 import SignUp from "./pages/SignUp";
 
+import PrivateRoute from "./components/PrivateRoute";
 import PublicRoute from "./components/PublicRoute";
 
 const App = () => {
@@ -16,7 +17,9 @@ const App = () => {
           <Route exact path="signup" element={<SignUp />} />
         </Route>
 
-        <Route exact path="/dashboard" element={<Dashboard />} />
+        <Route element={<PrivateRoute />}>
+          <Route exact path="/dashboard" element={<Dashboard />} />
+        </Route>
         <Route exact path="*" element={<Missing />} />
       </Routes>
     </Router>
