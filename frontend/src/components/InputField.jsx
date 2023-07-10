@@ -1,7 +1,7 @@
 import { forwardRef, useState } from "react";
 
 const InputField = forwardRef((props, ref) => {
-  const { id, type, label, name, value, handleChange } = props;
+  const { id, type, label, maxLength, name, value, handleChange, handleKeyDown } = props;
   const [showPass, setShowPass] = useState(false);
 
   const togglePasswordVisibility = () => {
@@ -20,7 +20,9 @@ const InputField = forwardRef((props, ref) => {
           id={id}
           name={name}
           value={value}
+          maxLength={maxLength}
           onChange={handleChange}
+          onKeyDown={handleKeyDown}
           spellCheck={false}
           autoComplete="off"
           ref={ref}
