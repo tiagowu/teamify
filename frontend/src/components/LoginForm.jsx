@@ -5,16 +5,24 @@ import useLoading from "../hooks/useLoading";
 import { postData } from "../api/axios";
 import Loading from "../pages/Loading";
 import Form from "./Form";
+import { useState } from "react";
 
 const LoginForm = () => {
+  const [data, setData] = useState({ email: "", password: "" });
   const { isLoading, setIsLoading } = useLoading();
   const { setAuth } = useAuth();
   const navigate = useNavigate();
 
-  const handleSubmit = async (userData) => {
+  const loginFields = [
+    { id: "login-email", type: "email", label: "Email", name: "email" },
+    { id: "login-password", type: "password", label: "Password", name: "password" },
+  ];
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
     try {
       setIsLoading(true);
-      const res = await postData("login", userData);
+      const res = await postData("login", data);
       const accessToken = res?.data?.accessToken;
       const user = res?.data?.user;
       setAuth({ user, accessToken });
@@ -28,17 +36,34 @@ const LoginForm = () => {
     }
   };
 
-  const loginFields = [
-    { id: "login-email", type: "email", label: "Email", name: "email" },
-    { id: "login-password", type: "password", label: "Password", name: "password" },
-  ];
+  const handleDataChange = (e) => {
+    const { name, value } = e.target;
+    setData((prevData) => ({ ...prevData, [name]: value }));
+  };
+
+  const isEmailValid = (email) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
+  const disabled = !isEmailValid(data.email) || (data.password && data.password.length < 6);
 
   return (
     <>
       {isLoading ? (
         <Loading />
       ) : (
-        <Form fields={loginFields} onSubmit={handleSubmit} buttonText="Login" text="Don't have an account?" link="/signup" linkText="Sign Up" />
+        <Form
+          buttonText="Login"
+          fields={loginFields}
+          data={data}
+          disabled={disabled}
+          handleChange={handleDataChange}
+          handleSubmit={handleLogin}
+          link="/signup"
+          linkText="Sign Up"
+          text="Don't have an account?"
+        />
       )}
     </>
   );
