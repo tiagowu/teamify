@@ -71,6 +71,29 @@ const teamController = {
       return res.status(500).json({ error: "Internal server error. Please try again later." });
     }
   },
+  getUserTeams: async (req, res) => {
+    try {
+      const user = req.user;
+      const teams = await Team.find({ _id: { $in: user.teams } });
+
+      const teamData = await Promise.all(
+        teams.map(async (team) => {
+          const member = await Member.findOne({ user: user._id, team: team._id });
+          const role = member ? member.role : null;
+          console.log(role);
+          return {
+            name: team.name,
+            description: team.description,
+            role: role,
+          };
+        })
+      );
+
+      res.json({ teams: teamData });
+    } catch (err) {
+      return res.status(500).json({ error: "Internal server error. Please try again later." });
+    }
+  },
 };
 
 module.exports = teamController;
