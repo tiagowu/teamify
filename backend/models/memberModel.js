@@ -13,8 +13,8 @@ const memberSchema = new Schema({
   },
   role: {
     type: String,
-    enum: ["manager", "co-manager", "member"],
-    default: "member",
+    enum: ["Manager", "Co-Manager", "Member"],
+    default: "Member",
   },
 });
 
