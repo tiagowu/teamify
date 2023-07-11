@@ -8,7 +8,7 @@ const userController = {
       const user = req.user;
 
       const team = await Team.createTeam(name, description);
-      const member = await Member.createMember(user._id, team._id, "manager");
+      const member = await Member.createMember(user._id, team._id, "Manager");
 
       team.addMember(member._id);
       user.addTeam(team._id);
