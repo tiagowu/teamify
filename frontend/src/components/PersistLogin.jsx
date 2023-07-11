@@ -1,13 +1,12 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Outlet } from "react-router-dom";
 
 import useRefreshToken from "../hooks/useRefreshToken";
 import useAuth from "../hooks/useAuth";
-import useLoading from "../hooks/useLoading";
 import Loading from "../pages/Loading";
 
 const PersistLogin = () => {
-  const { isLoading, setIsLoading } = useLoading();
+  const [isLoading, setIsLoading] = useState(true);
   const refresh = useRefreshToken();
   const { auth, persist } = useAuth();
   const isMounted = useRef(true);
