@@ -80,8 +80,8 @@ const teamController = {
         teams.map(async (team) => {
           const member = await Member.findOne({ user: user._id, team: team._id });
           const role = member ? member.role : null;
-          console.log(role);
           return {
+            id: team._id,
             name: team.name,
             description: team.description,
             role: role,
