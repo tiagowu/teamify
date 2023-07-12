@@ -1,4 +1,4 @@
-const Users = require("../models/userModel");
+const User = require("../models/userModel");
 const jwt = require("jsonwebtoken");
 
 const authMiddleware = {
@@ -19,7 +19,7 @@ const authMiddleware = {
         return res.status(401).json({ error: "Invalid or expired token. Please authenticate." });
       }
 
-      const user = await Users.findOne({ _id: decoded.id });
+      const user = await User.findOne({ _id: decoded.id });
       if (!user) {
         return res.status(401).json({ error: "User not found. Please authenticate." });
       }
