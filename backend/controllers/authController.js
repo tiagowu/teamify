@@ -92,7 +92,12 @@ const authController = {
 
       const newAccessToken = createAccessToken({ id: decoded.id });
 
-      return res.status(200).json({ accessToken: newAccessToken });
+      const user = await User.findOne({ _id: decoded.id });
+      if (!user) {
+        return res.redirect("/");
+      }
+
+      return res.status(200).json({ accessToken: newAccessToken, user });
     } catch (err) {
       return res.status(500).json({ error: err.message });
     }
