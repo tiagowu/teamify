@@ -1,16 +1,18 @@
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import useAuth from "../hooks/useAuth";
 import useLoading from "../hooks/useLoading";
-import { postData } from "../api/axios";
-import Loading from "../pages/Loading";
+import useMessage from "../hooks/useMessage";
+
+import { login } from "../api/auth";
 import Form from "./Form";
-import { useState } from "react";
 
 const LoginForm = () => {
   const [data, setData] = useState({ email: "", password: "" });
-  const { isLoading, setIsLoading } = useLoading();
   const { setAuth } = useAuth();
+  const { setIsLoading } = useLoading();
+  const { setMessage } = useMessage();
   const navigate = useNavigate();
 
   const loginFields = [
@@ -22,18 +24,16 @@ const LoginForm = () => {
     e.preventDefault();
     try {
       setIsLoading(true);
-      const res = await postData("login", data);
-      const accessToken = res?.data?.accessToken;
-      const user = res?.data?.user;
-      setAuth({ user, accessToken });
+      const response = await login(data);
+      console.log(response);
+      setAuth(response);
+      navigate("/dashboard", { replace: true });
+      setIsLoading(false);
     } catch (err) {
-      console.log(err);
-    } finally {
-      setTimeout(() => {
-        setIsLoading(false);
-        navigate("/dashboard", { replace: true });
-      }, 200);
+      setMessage({ type: "error", content: err.response.data.error });
+      setIsLoading(false);
     }
+    setData({ email: "", password: "" });
   };
 
   const handleDataChange = (e) => {
@@ -41,31 +41,31 @@ const LoginForm = () => {
     setData((prevData) => ({ ...prevData, [name]: value }));
   };
 
-  const isEmailValid = (email) => {
+  const isEmailValid = () => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
+    return emailRegex.test(data.email);
   };
 
-  const disabled = !isEmailValid(data.email) || (data.password && data.password.length < 6);
+  const disabled = !isEmailValid() || data.password.length < 6;
+
+  useEffect(() => {
+    return () => {
+      setMessage({ type: "", content: "" });
+    };
+  }, [setMessage]);
 
   return (
-    <>
-      {isLoading ? (
-        <Loading />
-      ) : (
-        <Form
-          buttonText="Login"
-          fields={loginFields}
-          data={data}
-          disabled={disabled}
-          handleChange={handleDataChange}
-          handleSubmit={handleLogin}
-          link="/signup"
-          linkText="Sign Up"
-          text="Don't have an account?"
-        />
-      )}
-    </>
+    <Form
+      buttonText="Login"
+      fields={loginFields}
+      data={data}
+      disabled={disabled}
+      handleChange={handleDataChange}
+      handleSubmit={handleLogin}
+      link="/signup"
+      linkText="Sign Up"
+      text="Don't have an account?"
+    />
   );
 };
 
