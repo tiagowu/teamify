@@ -1,13 +1,18 @@
-import { useState } from "react";
-import useAuth from "../hooks/useAuth";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-import { postData } from "../api/axios";
+import useAuth from "../hooks/useAuth";
+import useLoading from "../hooks/useLoading";
+import useMessage from "../hooks/useMessage";
+
+import { signup } from "../api/auth";
 import Form from "./Form";
 
 const SignUpForm = () => {
   const [data, setData] = useState({ fullName: "", email: "", password: "" });
   const { setAuth } = useAuth();
+  const { setIsLoading } = useLoading();
+  const { setMessage } = useMessage();
   const navigate = useNavigate();
 
   const signupFields = [
@@ -19,15 +24,15 @@ const SignUpForm = () => {
   const handleSignUp = async (e) => {
     e.preventDefault();
     try {
-      const res = await postData("signup", data);
-      const accessToken = res?.data?.accessToken;
-      const user = res?.data?.user;
-      setAuth({ user, accessToken });
-      setTimeout(() => {
-        navigate("/dashboard", { replace: true });
-      }, 200);
+      setIsLoading(true);
+      const response = await signup(data);
+      setAuth(response);
+      setData({ fullName: "", email: "", password: "" });
+      navigate("/dashboard", { replace: true });
+      setIsLoading(false);
     } catch (err) {
-      console.log(err);
+      setMessage({ type: "error", content: err.response.data.error });
+      setIsLoading(false);
     }
   };
 
@@ -36,12 +41,18 @@ const SignUpForm = () => {
     setData((prevData) => ({ ...prevData, [name]: value }));
   };
 
-  const isEmailValid = (email) => {
+  const isEmailValid = () => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
+    return emailRegex.test(data.email);
   };
 
-  const disabled = !isEmailValid(data.email) || data.password.length < 6;
+  const disabled = !isEmailValid() || data.password.length < 6;
+
+  useEffect(() => {
+    return () => {
+      setMessage({ type: "", content: "" });
+    };
+  }, [setMessage]);
 
   return (
     <Form
