@@ -1,20 +1,20 @@
 import { useEffect, useRef, useState } from "react";
 import { Outlet } from "react-router-dom";
 
-import useRefreshToken from "../hooks/useRefreshToken";
+import { refresh } from "../api/auth";
 import useAuth from "../hooks/useAuth";
 import Loading from "../pages/Loading";
 
 const PersistLogin = () => {
   const [isLoading, setIsLoading] = useState(true);
-  const refresh = useRefreshToken();
-  const { auth, persist } = useAuth();
+  const { auth, setAuth, persist } = useAuth();
   const isMounted = useRef(true);
 
   useEffect(() => {
     const verifyRefreshToken = async () => {
       try {
-        await refresh();
+        const response = await refresh();
+        setAuth(response);
       } catch (err) {
         console.error(err);
       } finally {
@@ -37,7 +37,7 @@ const PersistLogin = () => {
     return () => {
       isMounted.current = false;
     };
-  }, [persist, auth.accessToken, refresh, setIsLoading]);
+  }, [persist, auth.accessToken, setAuth, setIsLoading]);
 
   return <>{!persist ? <Outlet /> : isLoading ? <Loading /> : <Outlet />}</>;
 };
