@@ -28,7 +28,7 @@ const InputField = forwardRef((props, ref) => {
           ref={ref}
           required
         />
-        {type === "password" && (
+        {type === "password" && value && (
           <button className="absolute right-2 top-2 text-gray-500 focus:outline-none" type="button" onClick={togglePasswordVisibility}>
             {showPass ? "Hide" : "Show"}
           </button>
