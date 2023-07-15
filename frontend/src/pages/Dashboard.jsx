@@ -11,11 +11,11 @@ const Dashboard = () => {
       ) : (
         <div className="grid min-h-screen sm:h-screen pt-24 pb-8 px-4 sm:px-8 gap-4 sm:grid-rows-3">
           <div className="grid grid-cols-12 sm:row-span-2 gap-4">
-            <div className="h-[480px] rounded sm:h-full col-span-12 sm:col-span-4 bg-gray-200 overflow-auto scrollbar-thin scrollbar-thumb-rounded scrollbar-thumb-slate-300 scrollbar-track-blue-200 scrollbar-track-rounded">
+            <div className="h-[480px] rounded pb-2 sm:h-full col-span-12 sm:col-span-4 bg-gray-200 overflow-hidden">
               <TeamList />
             </div>
-            <div className="h-[480px] sm:min-h-0 sm:h-full col-span-12 sm:col-span-8 bg-gray-300 overflow-auto">
-              <div className="p-4">Annoucements</div>
+            <div className="h-[480px] rounded pb-2 sm:h-full col-span-12 sm:col-span-8 bg-gray-300 overflow-hidden">
+              <div>Announcements</div>
             </div>
           </div>
           <div className="grid grid-cols-12 sm:row-span-1 gap-4">
