@@ -1,18 +1,14 @@
-import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
 
+import { joinTeam } from "../api/user";
 import useAuth from "../hooks/useAuth";
-// import useLoading from "../hooks/useLoading";
-import { postData } from "../api/axios";
-// import Loading from "../pages/Loading";
+import useMessage from "../hooks/useMessage";
 import Form from "./Form";
-import { useState } from "react";
 
 const JoinTeamForm = () => {
   const [data, setData] = useState({ code: "" });
-  const [message, setMessage] = useState({ type: "", content: "" });
-  // const { isLoading, setIsLoading } = useLoading();
   const { auth } = useAuth();
-  const navigate = useNavigate();
+  const { setMessage } = useMessage();
 
   const handleKeyDown = (e) => {
     const key = e.key;
@@ -24,16 +20,10 @@ const JoinTeamForm = () => {
   const handleJoinTeam = async (e) => {
     e.preventDefault();
     try {
-      // setIsLoading(true);
-      await postData("teams/join", { code: data.code }, auth.accessToken);
+      const response = await joinTeam({ code: data.code }, auth.accessToken);
+      setMessage({ type: "success", content: response.data.message });
     } catch (err) {
-      // console.log(err.response.data.error);
       setMessage({ type: "error", content: err.response.data.error });
-    } finally {
-      setTimeout(() => {
-        // setIsLoading(false);
-        navigate("/dashboard", { replace: true });
-      }, 200);
     }
     setData({ code: "" });
   };
@@ -47,17 +37,13 @@ const JoinTeamForm = () => {
 
   const disabled = data.code.length < 6;
 
-  return (
-    <Form
-      buttonText="Join"
-      data={data}
-      disabled={disabled}
-      fields={fields}
-      handleChange={handleDataChange}
-      handleSubmit={handleJoinTeam}
-      message={message}
-    />
-  );
+  useEffect(() => {
+    return () => {
+      setMessage({ type: "", content: "" });
+    };
+  }, [setMessage]);
+
+  return <Form buttonText="Join" data={data} disabled={disabled} fields={fields} handleChange={handleDataChange} handleSubmit={handleJoinTeam} />;
 };
 
 export default JoinTeamForm;
