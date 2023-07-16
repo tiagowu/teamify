@@ -1,5 +1,4 @@
-import React, { useEffect, useState } from "react";
-
+import { useEffect, useState } from "react";
 import { getData } from "../api/axios";
 import useAuth from "../hooks/useAuth";
 import useLoading from "../hooks/useLoading";
@@ -24,16 +23,16 @@ const TeamList = () => {
       }
     };
 
-    fetchTeams();
-  }, [auth.accessToken, setIsLoading]);
+    if (auth.user?.teams?.length > 0) fetchTeams();
+  }, [auth.accessToken, auth.user.teams, setIsLoading]);
 
   return (
-    <>
+    <div className="rounded h-full bg-gray-200 overflow-y-auto overscroll-none scrollbar-thin scrollbar-thumb-rounded scrollbar-thumb-rounded scrollbar-thumb-slate-300 scrollbar-track-transparent scrollbar-track-rounded ">
       <TeamHeader />
       {teams.map((team) => (
         <TeamItem key={team.id} team={team} />
       ))}
-    </>
+    </div>
   );
 };
 
