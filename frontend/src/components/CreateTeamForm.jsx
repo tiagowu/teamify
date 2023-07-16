@@ -1,21 +1,23 @@
-import useAuth from "../hooks/useAuth";
-import { postData } from "../api/axios";
-import Form from "./Form";
 import { useState } from "react";
+
+import { createTeam } from "../api/user";
+import useAuth from "../hooks/useAuth";
+import useMessage from "../hooks/useMessage";
+import Form from "./Form";
 
 const CreateTeamForm = () => {
   const [data, setData] = useState({ name: "", description: "" });
   const { auth } = useAuth();
+  const { setMessage } = useMessage();
 
   const handleCreateTeam = async (e) => {
     e.preventDefault();
     try {
-      const res = await postData("teams", data, auth.accessToken);
-      console.log(res);
+      const response = await createTeam(data, auth.accessToken);
+      setMessage({ type: "success", content: response.data.message });
+      window.location.reload(); // TODO: Navigate to newly created team homepage
     } catch (err) {
-      console.log(err);
-    } finally {
-      window.location.reload();
+      setMessage({ type: "error", content: err.response.data.error });
     }
     setData({ name: "", description: "" });
   };
