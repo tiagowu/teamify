@@ -17,15 +17,19 @@ const TeamHeader = () => {
   };
 
   return (
-    <div className="flex justify-center sticky top-0 p-2 bg-blue-400 rounded">
-      <p className="flex justify-center items-center flex-1">TEAMS</p>
-      <div className="flex justify-center gap-2">
-        <button onClick={openModal("joinTeam")} className="flex items-center text-2xl">
-          <MdGroupAdd />
-        </button>
-        <button onClick={openModal("createTeam")} className="flex items-center text-2xl">
-          <MdAdd />
-        </button>
+    <>
+      <div className="flex justify-center sticky top-0 z-30 bg-blue-400 p-2 rounded">
+        <p className="flex justify-center items-center flex-1">TEAMS</p>
+        <div className="flex justify-center gap-2">
+          <button onClick={openModal("joinTeam")} className="flex items-center text-2xl">
+            <MdGroupAdd />
+          </button>
+          <button onClick={openModal("createTeam")} className="flex items-center text-2xl">
+            <MdAdd />
+          </button>
+        </div>
+      </div>
+      <div className="relative z-40">
         {activeModal === "joinTeam" && (
           <Modal closeModal={closeModal}>
             <p className="text-xl text-center">Join Team</p>
@@ -39,7 +43,7 @@ const TeamHeader = () => {
           </Modal>
         )}
       </div>
-    </div>
+    </>
   );
 };
 
