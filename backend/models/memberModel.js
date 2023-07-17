@@ -30,4 +30,14 @@ memberSchema.statics.createMember = async function (userId, teamId, role) {
   return member;
 };
 
+memberSchema.methods.addProject = async function (projectId) {
+  this.projects.push(projectId);
+  await this.save();
+};
+
+memberSchema.methods.removeProject = async function (projectId) {
+  this.projects.pull(projectId);
+  await this.save();
+};
+
 module.exports = mongoose.model("Member", memberSchema);
