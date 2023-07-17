@@ -36,4 +36,16 @@ const projectSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+projectSchema.statics.createProject = async function (team, name, description, members, deadline) {
+  const project = new this({
+    team,
+    name,
+    description,
+    members,
+    deadline,
+  });
+  await project.save();
+  return project;
+};
+
 module.exports = mongoose.model("Project", projectSchema);
