@@ -94,6 +94,29 @@ const teamController = {
       return res.status(500).json({ error: "Internal server error. Please try again later." });
     }
   },
+  getTeamById: async (req, res) => {
+    try {
+      const userId = req.user._id;
+      const team = req.team;
+
+      const member = await Member.findOne({ user: userId, team: team._id });
+      if (!member) {
+        return res.status(403).json({ error: "You are not a member of the team." });
+      }
+
+      return res.status(200).json({
+        team: {
+          code: team.code,
+          name: team.name,
+          description: team.description,
+          projects: team.projects,
+          tasks: team.tasks,
+        },
+      });
+    } catch (err) {
+      return res.status(500).json({ error: "Internal server error. Please try again later." });
+    }
+  },
 };
 
 module.exports = teamController;
