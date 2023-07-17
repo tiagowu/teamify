@@ -16,6 +16,12 @@ const memberSchema = new Schema({
     enum: ["Manager", "Co-Manager", "Member"],
     default: "Member",
   },
+  projects: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: "Project",
+    },
+  ],
 });
 
 memberSchema.statics.createMember = async function (userId, teamId, role) {
