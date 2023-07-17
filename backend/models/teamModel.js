@@ -28,6 +28,18 @@ const teamSchema = new mongoose.Schema(
       unique: true,
       required: true,
     },
+    projects: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "Project",
+      },
+    ],
+    tasks: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "Task",
+      },
+    ],
   },
   { timestamps: true }
 );
@@ -79,6 +91,16 @@ teamSchema.methods.addRequest = async function (userId) {
 
 teamSchema.methods.removeRequest = async function (userId) {
   this.pendingRequests.pull(userId);
+  await this.save();
+};
+
+teamSchema.methods.addProject = async function (projectId) {
+  this.projects.push(projectId);
+  await this.save();
+};
+
+teamSchema.methods.removeProject = async function (projectId) {
+  this.projects.pull(projectId);
   await this.save();
 };
 
