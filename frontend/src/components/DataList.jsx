@@ -9,7 +9,7 @@ const DataList = ({ buttons, item: Item, list, title, vertical }) => {
     >
       <DataHeader title={title} buttons={buttons} vertical={vertical} />
       {list.map((item) => (
-        <Item key={item.id} item={item} />
+        <Item key={item._id} item={item} />
       ))}
     </div>
   );
