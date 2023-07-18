@@ -5,7 +5,7 @@ import useMessage from "../hooks/useMessage";
 
 import { Link } from "react-router-dom";
 
-const Form = ({ buttonText, data, disabled, fields, handleChange, handleSubmit, link, linkText, text }) => {
+const Form = ({ buttonText, data, disabled, fields, handleChange, handleSubmit, link, linkText, renderAdditionalFields, text }) => {
   const { message } = useMessage();
   const userRef = useRef();
 
@@ -18,7 +18,7 @@ const Form = ({ buttonText, data, disabled, fields, handleChange, handleSubmit, 
   }, []);
 
   return (
-    <form className="flex flex-col justify-center max-w-lg w-full bg-white shadow-md rounded p-4" onSubmit={handleSubmit} noValidate>
+    <form className="overflow-auto flex flex-col justify-center max-w-lg w-full bg-white shadow-md rounded p-4" onSubmit={handleSubmit} noValidate>
       <Logo className="h-24 text-blue-400" />
       {fields.map((field, index) => (
         <InputField
@@ -34,6 +34,7 @@ const Form = ({ buttonText, data, disabled, fields, handleChange, handleSubmit, 
           ref={index === 0 ? userRef : null}
         />
       ))}
+      {renderAdditionalFields && renderAdditionalFields()}
       {message && <p className={`text-center py-2 ${getMessageColor()}`}>{message.content}</p>}
       <button
         className="mx-auto w-20 border rounded text-white bg-blue-500 p-2 mt-2 disabled:bg-blue-400 hover:bg-blue-600"
