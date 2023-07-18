@@ -112,6 +112,7 @@ const teamController = {
           description: team.description,
           projects: team.projects,
           tasks: team.tasks,
+          role: member.role,
         },
       });
     } catch (err) {
