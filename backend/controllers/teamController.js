@@ -1,6 +1,7 @@
 const Member = require("../models/memberModel");
 const Team = require("../models/teamModel");
 const User = require("../models/userModel");
+const Project = require("../models/projectModel");
 
 const teamController = {
   deleteTeam: async (req, res) => {
@@ -113,6 +114,30 @@ const teamController = {
           tasks: team.tasks,
         },
       });
+    } catch (err) {
+      return res.status(500).json({ error: "Internal server error. Please try again later." });
+    }
+  },
+  createProject: async (req, res) => {
+    try {
+      const { teamId, name, description, members, deadline } = req.body;
+
+      const team = await Team.findById(teamId);
+      if (!team) {
+        return res.status(404).json({ error: "Team not found." });
+      }
+
+      const project = await Project.createProject(teamId, name, description, members, deadline);
+      team.addProject(project._id);
+
+      for (const memberId of members) {
+        const member = await Member.findById(memberId);
+        if (member) {
+          Member.addProject(project._id);
+        }
+      }
+
+      return res.status(201).json({ message: "Project created successfully.", project });
     } catch (err) {
       return res.status(500).json({ error: "Internal server error. Please try again later." });
     }
