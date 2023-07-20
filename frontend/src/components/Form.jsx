@@ -35,7 +35,7 @@ const Form = ({ buttonText, data, disabled, fields, handleChange, handleSubmit, 
         />
       ))}
       {renderAdditionalFields && renderAdditionalFields()}
-      {message && <p className={`text-center py-2 ${getMessageColor()}`}>{message.content}</p>}
+      {message && <p className={`text-center normal-whitespace break-words py-2 ${getMessageColor()}`}>{message.content}</p>}
       <button
         className="mx-auto w-20 border rounded text-white bg-blue-500 p-2 mt-2 disabled:bg-blue-400 hover:bg-blue-600"
         type="submit"
