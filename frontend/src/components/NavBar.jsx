@@ -33,7 +33,11 @@ const NavBar = () => {
       <ul className="flex items-center space-x-3">
         <li className="hidden sm:block">
           <div className="truncate max-w-[320px] bg-blue-400 rounded-full px-3 py-2">
-            {auth.user && <span className="text-md text-right">{auth.user.fullName}</span>}
+            {auth.user && (
+              <span className="text-md text-right">
+                {auth.user.firstName} {auth.user.lastName}
+              </span>
+            )}
           </div>
         </li>
         <li>
