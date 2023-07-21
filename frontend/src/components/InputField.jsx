@@ -13,7 +13,7 @@ const InputField = forwardRef((props, ref) => {
       <label className="text-blue-400 text-sm" htmlFor={id}>
         {label}
       </label>
-      <div className="relative">
+      <div className="relative flex justify-center">
         <input
           className="shadow border rounded w-full py-2 px-3 text-gray-700 focus:outline-none focus:border-blue-400"
           type={showPass ? "text" : type}
