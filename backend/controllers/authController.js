@@ -4,14 +4,14 @@ const jwt = require("jsonwebtoken");
 const authController = {
   signup: async (req, res) => {
     try {
-      const { fullName, email, password } = req.body;
+      const { firstName, lastName, email, password } = req.body;
 
       const existingUser = await User.findOne({ email });
       if (existingUser) {
         return res.status(409).json({ error: "Email already exists. Please choose a different email." });
       }
 
-      const newUser = new User({ fullName, email, password });
+      const newUser = new User({ firstName, lastName, email, password });
       await newUser.save();
 
       const accessToken = createAccessToken({ id: newUser._id });
