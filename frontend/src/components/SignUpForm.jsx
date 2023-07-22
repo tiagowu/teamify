@@ -22,11 +22,24 @@ const SignUpForm = () => {
     { id: "signup-password", type: "password", label: "Password", name: "password" },
   ];
 
+  const capitalizeWords = (str) => {
+    return str
+      .toLowerCase()
+      .split(" ")
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(" ");
+  };
+
   const handleSignUp = async (e) => {
     e.preventDefault();
     try {
       setIsLoading(true);
-      const response = await signup(data);
+      const modifiedData = {
+        ...data,
+        firstName: capitalizeWords(data.firstName.trim()),
+        lastName: capitalizeWords(data.lastName.trim()),
+      };
+      const response = await signup(modifiedData);
       setAuth(response);
       setData({ firstName: "", lastName: "", email: "", password: "" });
       navigate("/dashboard", { replace: true });
