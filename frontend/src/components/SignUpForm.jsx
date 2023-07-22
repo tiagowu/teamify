@@ -1,22 +1,23 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
+import { signup } from "../api/auth";
 import useAuth from "../hooks/useAuth";
 import useLoading from "../hooks/useLoading";
 import useMessage from "../hooks/useMessage";
 
-import { signup } from "../api/auth";
 import Form from "./Form";
 
 const SignUpForm = () => {
-  const [data, setData] = useState({ fullName: "", email: "", password: "" });
+  const [data, setData] = useState({ firstName: "", lastName: "", email: "", password: "" });
   const { setAuth } = useAuth();
   const { setIsLoading } = useLoading();
   const { setMessage } = useMessage();
   const navigate = useNavigate();
 
   const signupFields = [
-    { id: "signup-name", type: "text", label: "Full Name", name: "fullName" },
+    { id: "signup-fname", type: "text", label: "First Name", name: "firstName" },
+    { id: "signup-lname", type: "text", label: "Last Name", name: "lastName" },
     { id: "signup-email", type: "email", label: "Email", name: "email" },
     { id: "signup-password", type: "password", label: "Password", name: "password" },
   ];
@@ -27,11 +28,15 @@ const SignUpForm = () => {
       setIsLoading(true);
       const response = await signup(data);
       setAuth(response);
-      setData({ fullName: "", email: "", password: "" });
+      setData({ firstName: "", lastName: "", email: "", password: "" });
       navigate("/dashboard", { replace: true });
       setIsLoading(false);
     } catch (err) {
-      setMessage({ type: "error", content: err.response.data.error });
+      if (err.response.data.errors.length > 0) {
+        setMessage({ type: "error", content: err.response.data.errors[0] });
+      } else {
+        setMessage({ type: "error", content: err.response.data.error });
+      }
       setIsLoading(false);
     }
   };
