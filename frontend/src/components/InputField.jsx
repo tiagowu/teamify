@@ -1,7 +1,7 @@
 import { forwardRef, useState } from "react";
 
 const InputField = forwardRef((props, ref) => {
-  const { id, type, label, maxLength, name, value, handleChange, handleKeyDown } = props;
+  const { id, type, label, maxLength, min, name, value, handleChange, handleKeyDown } = props;
   const [showPass, setShowPass] = useState(false);
 
   const togglePasswordVisibility = () => {
@@ -16,16 +16,17 @@ const InputField = forwardRef((props, ref) => {
       <div className="relative flex justify-center">
         <input
           className="shadow border rounded w-full py-2 px-3 text-gray-700 focus:outline-none focus:border-blue-400"
-          type={showPass ? "text" : type}
+          autoComplete="off"
           id={id}
-          name={name}
-          value={value}
           maxLength={maxLength}
+          min={min}
+          name={name}
           onChange={handleChange}
           onKeyDown={handleKeyDown}
-          spellCheck={false}
-          autoComplete="off"
           ref={ref}
+          spellCheck={false}
+          type={showPass ? "text" : type}
+          value={value}
           required
         />
         {type === "password" && value && (
