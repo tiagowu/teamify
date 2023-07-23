@@ -140,25 +140,25 @@ const teamController = {
   },
   createProject: async (req, res) => {
     try {
-      const { teamId, name, description, members, deadline } = req.body;
+      const { name, description, members, deadline } = req.body;
+      const team = req.team;
 
-      const team = await Team.findById(teamId);
-      if (!team) {
-        return res.status(404).json({ error: "Team not found." });
-      }
-
-      const project = await Project.createProject(teamId, name, description, members, deadline);
+      const project = await Project.createProject(team._id, name, description, members, deadline);
       team.addProject(project._id);
 
       for (const memberId of members) {
         const member = await Member.findById(memberId);
         if (member) {
-          Member.addProject(project._id);
+          member.addProject(project._id);
         }
       }
 
       return res.status(201).json({ message: "Project created successfully.", project });
     } catch (err) {
+      if (err.name === "ValidationError") {
+        const validationErrors = Object.values(err.errors).map((error) => error.message);
+        return res.status(400).json({ errors: validationErrors });
+      }
       return res.status(500).json({ error: "Internal server error. Please try again later." });
     }
   },
