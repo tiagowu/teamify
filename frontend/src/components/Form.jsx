@@ -31,6 +31,7 @@ const Form = ({ buttonText, data, disabled, fields, handleChange, handleSubmit, 
           handleChange={handleChange}
           handleKeyDown={field.onKeyDown ? field.onKeyDown : null}
           maxLength={field.maxLength ? field.maxLength : null}
+          min={field.min ? field.min : null}
           ref={index === 0 ? userRef : null}
         />
       ))}
