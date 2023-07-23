@@ -2,6 +2,7 @@ const Member = require("../models/memberModel");
 const Team = require("../models/teamModel");
 const User = require("../models/userModel");
 const Project = require("../models/projectModel");
+const Task = require("../models/taskModel");
 
 const teamController = {
   deleteTeam: async (req, res) => {
@@ -82,7 +83,7 @@ const teamController = {
           const member = await Member.findOne({ user: user._id, team: team._id });
           const role = member ? member.role : null;
           return {
-            id: team._id,
+            _id: team._id,
             name: team.name,
             description: team.description,
             role: role,
@@ -105,15 +106,33 @@ const teamController = {
         return res.status(403).json({ error: "You are not a member of the team." });
       }
 
-      return res.status(200).json({
-        team: {
-          code: team.code,
-          name: team.name,
-          description: team.description,
-          projects: team.projects,
-          tasks: team.tasks,
+      await team.populate("projects");
+      await team.populate({
+        path: "projects",
+        populate: { path: "members", populate: { path: "user", select: "firstName lastName" } },
+      });
+      await team.populate("tasks");
+      await team.populate({
+        path: "members",
+        populate: { path: "user", select: "firstName lastName" },
+      });
+
+      const teamData = {
+        code: team.code,
+        name: team.name,
+        description: team.description,
+        projects: team.projects,
+        role: member.role,
+        members: team.members.map((member) => ({
+          _id: member._id,
+          name: `${member.user.firstName} ${member.user.lastName}`,
           role: member.role,
-        },
+        })),
+        ...(member.role !== "Member" && { requests: team.pendingRequests }),
+      };
+
+      return res.status(200).json({
+        team: teamData,
       });
     } catch (err) {
       return res.status(500).json({ error: "Internal server error. Please try again later." });
