@@ -162,6 +162,30 @@ const teamController = {
       return res.status(500).json({ error: "Internal server error. Please try again later." });
     }
   },
+  updateProject: async (req, res) => {
+    try {
+      const { teamId, projectId } = req.params;
+      const { isCompleted } = req.body;
+
+      const project = await Project.findOne({ _id: projectId, team: teamId }).populate("members");
+      if (!project) {
+        return res.status(404).json({ error: "Project not found." });
+      }
+
+      const userIsMember = project.members.some((member) => member.user.equals(req.user._id));
+      if (!userIsMember) {
+        return res.status(403).json({ error: "You are not a member of this project" });
+      }
+
+      project.isCompleted = isCompleted;
+
+      await project.save();
+
+      return res.status(201).json({ message: "Project updated successfully.", project });
+    } catch (err) {
+      return res.status(500).json({ error: err.message });
+    }
+  },
 };
 
 module.exports = teamController;
