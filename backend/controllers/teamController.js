@@ -170,17 +170,24 @@ const teamController = {
   },
   updateProject: async (req, res) => {
     try {
+      const userId = req.user._id;
       const { teamId, projectId } = req.params;
       const { isCompleted } = req.body;
+
+      const member = await Member.findOne({ user: userId, team: teamId });
+      if (!member) {
+        return res.status(403).json({ error: "You are not a member of the team." });
+      }
 
       const project = await Project.findOne({ _id: projectId, team: teamId }).populate("members");
       if (!project) {
         return res.status(404).json({ error: "Project not found." });
       }
 
+      const userIsManager = member.role === "Manager";
       const userIsMember = project.members.some((member) => member.user.equals(req.user._id));
-      if (!userIsMember) {
-        return res.status(403).json({ error: "You are not a member of this project" });
+      if (!userIsManager && !userIsMember) {
+        return res.status(403).json({ error: "You are not authorized to update the project." });
       }
 
       project.isCompleted = isCompleted;
