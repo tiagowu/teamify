@@ -1,7 +1,7 @@
 import axios from "axios";
 
-export const deleteData = async (url, post, token) => {
-  const res = await axios.delete(`/url/${url}`, post, {
+export const deleteData = async (url, token) => {
+  const res = await axios.delete(`/api/${url}`, {
     headers: { Authorization: `Bearer ${token}` },
   });
   return res;
@@ -15,7 +15,7 @@ export const getData = async (url, token) => {
 };
 
 export const patchData = async (url, post, token) => {
-  const res = await axios.patch(`/url/${url}`, post, {
+  const res = await axios.patch(`/api/${url}`, post, {
     headers: { Authorization: `Bearer ${token}` },
   });
   return res;
@@ -29,7 +29,7 @@ export const postData = async (url, post, token) => {
 };
 
 export const putData = async (url, post, token) => {
-  const res = await axios.put(`/url/${url}`, post, {
+  const res = await axios.put(`/api/${url}`, post, {
     headers: { Authorization: `Bearer ${token}` },
   });
   return res;
