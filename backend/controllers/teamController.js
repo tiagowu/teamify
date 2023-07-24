@@ -119,18 +119,22 @@ const teamController = {
         populate: { path: "user", select: "firstName lastName" },
       });
 
+      const pendingRequests = await User.find({ _id: { $in: team.pendingRequests } }, "firstName lastName");
+      const projects = team.projects.filter((project) => project.members.some((projMember) => projMember._id.equals(member._id)));
+      const members = team.members.map((member) => ({
+        _id: member._id,
+        name: `${member.user.firstName} ${member.user.lastName}`,
+        role: member.role,
+      }));
+
       const teamData = {
         code: team.code,
         name: team.name,
         description: team.description,
-        projects: team.projects,
+        projects: member.role === "Manager" ? team.projects : projects,
         role: member.role,
-        members: team.members.map((member) => ({
-          _id: member._id,
-          name: `${member.user.firstName} ${member.user.lastName}`,
-          role: member.role,
-        })),
-        ...(member.role !== "Member" && { requests: team.pendingRequests }),
+        members,
+        ...(member.role !== "Member" && { pendingRequests }),
       };
 
       return res.status(200).json({
