@@ -37,12 +37,13 @@ const teamController = {
       }
 
       const member = await Member.createMember(userId, team._id);
-      team.addMember(member._id);
-      team.removeRequest(userId);
+      await team.addMember(member._id);
+      await team.removeRequest(userId);
 
       await User.findByIdAndUpdate(userId, { $push: { teams: team._id } });
+      const pendingRequests = await User.find({ _id: { $in: team.pendingRequests } }, "firstName lastName");
 
-      return res.status(200).json({ message: "User successfully added to the team." });
+      return res.status(200).json({ message: "User successfully added to the team.", requests: pendingRequests });
     } catch (err) {
       return res.status(500).json({ error: "Internal server error. Please try again later." });
     }
