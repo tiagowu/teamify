@@ -10,8 +10,8 @@ const userController = {
       const team = await Team.createTeam(name, description);
       const member = await Member.createMember(user._id, team._id, "Manager");
 
-      team.addMember(member._id);
-      user.addTeam(team._id);
+      await team.addMember(member._id);
+      await user.addTeam(team._id);
 
       return res.status(201).json({ message: "Team created successfully.", team });
     } catch (err) {
@@ -33,7 +33,7 @@ const userController = {
         return res.status(400).json({ error: "You are already a member of the team." });
       }
 
-      team.addRequest(userId);
+      await team.addRequest(userId);
 
       return res.status(200).json({ message: "Request to join the team sent successfully." });
     } catch (err) {
@@ -50,7 +50,7 @@ const userController = {
         return res.status(400).json({ error: "User is not a member of the team." });
       }
 
-      team.removeMember(member._id);
+      await team.removeMember(member._id);
 
       return res.status(200).json({ message: "User successfully left the team." });
     } catch (err) {
