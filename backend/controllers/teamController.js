@@ -19,6 +19,7 @@ const teamController = {
 
       await Member.deleteMany({ _id: { $in: memberIds } });
       await User.updateMany({ _id: { $in: userIds } }, { $pull: { teams: teamId } });
+      await Project.deleteMany({ team: teamId });
 
       return res.status(200).json({ message: "Team and associated members deleted successfully." });
     } catch (err) {
