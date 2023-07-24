@@ -9,8 +9,12 @@ router.param("memberId", teamMiddleware.verifyMemberId);
 
 router.get("/teams", teamController.getUserTeams);
 router.get("/teams/:teamId", teamController.getTeamById);
-router.post("/teams/:teamId/:userId/accept", teamMiddleware.checkPermission(["Manager", "Co-Manager"]), teamController.acceptPendingRequest);
 router.delete("/teams/:teamId", teamMiddleware.checkPermission(["Manager"]), teamController.deleteTeam);
-router.delete("/teams/members/:memberId", teamMiddleware.checkPermission(["Manager", "Co-Manager"]), teamController.removeMember);
+
+router.post("/teams/:teamId/:userId/accept", teamMiddleware.checkPermission(["Manager", "Co-Manager"]), teamController.acceptPendingRequest);
+router.delete("/teams/:teamId/members/:memberId", teamMiddleware.checkPermission(["Manager"]), teamController.removeMember);
+
+router.post("/teams/:teamId/projects", teamMiddleware.checkPermission(["Manager", "Co-Manager"]), teamController.createProject);
+router.put("/teams/:teamId/projects/:projectId", teamController.updateProject);
 
 module.exports = router;
