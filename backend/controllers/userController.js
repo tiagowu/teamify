@@ -13,7 +13,7 @@ const userController = {
       await team.addMember(member._id);
       await user.addTeam(team._id);
 
-      return res.status(201).json({ message: "Team created successfully.", team });
+      return res.status(201).json({ message: "Team created successfully.", teamId: team._id });
     } catch (err) {
       return res.status(500).json({ error: err.message });
     }
