@@ -40,23 +40,6 @@ const userController = {
       return res.status(500).json({ error: "Internal server error. Please try again later." });
     }
   },
-  leaveTeam: async (req, res) => {
-    try {
-      const userId = req.user._id;
-      const team = req.team;
-
-      const member = await Member.findOneAndDelete({ user: userId, team: team._id });
-      if (!member) {
-        return res.status(400).json({ error: "User is not a member of the team." });
-      }
-
-      await team.removeMember(member._id);
-
-      return res.status(200).json({ message: "User successfully left the team." });
-    } catch (err) {
-      return res.status(500).json({ error: err.message });
-    }
-  },
 };
 
 module.exports = userController;
