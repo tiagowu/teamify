@@ -221,6 +221,34 @@ const teamController = {
       return res.status(500).json({ error: "Internal server error. Please try again later." });
     }
   },
+  leaveTeam: async (req, res) => {
+    try {
+      const user = req.user;
+      const team = req.team;
+
+      const member = await Member.findOne({ user: user._id, team: team._id });
+      if (!member) {
+        return res.status(403).json({ error: "You are not a member of the team." });
+      }
+
+      if (member.role === "Manager") {
+        return res.status(400).json({ message: "You cannot leave the team as the manager." });
+      }
+
+      await user.removeTeam(teamId);
+      await team.removeMember(member._id);
+
+      const projects = await Project.find({ members: member._id, team: team._id });
+      for (const project of projects) {
+        await Project.findByIdAndUpdate(project._id, { $pull: { members: member._id } });
+      }
+
+      await member.deleteOne();
+      return res.status(200).json({ message: "You have successfully left the team." });
+    } catch (err) {
+      return res.status(500).json({ error: "Internal server error. Please try again later." });
+    }
+  },
 };
 
 module.exports = teamController;
