@@ -43,7 +43,18 @@ const teamController = {
       await User.findByIdAndUpdate(userId, { $push: { teams: team._id } });
       const pendingRequests = await User.find({ _id: { $in: team.pendingRequests } }, "firstName lastName");
 
-      return res.status(200).json({ message: "User successfully added to the team.", requests: pendingRequests });
+      await team.populate({
+        path: "members",
+        populate: { path: "user", select: "firstName lastName" },
+      });
+
+      const members = team.members.map((member) => ({
+        _id: member._id,
+        name: `${member.user.firstName} ${member.user.lastName}`,
+        role: member.role,
+      }));
+
+      return res.status(200).json({ message: "User successfully added to the team.", pendingRequests, members });
     } catch (err) {
       return res.status(500).json({ error: "Internal server error. Please try again later." });
     }
@@ -196,7 +207,7 @@ const teamController = {
 
       return res.status(201).json({ message: "Project updated successfully.", project });
     } catch (err) {
-      return res.status(500).json({ error: err.message });
+      return res.status(500).json({ error: "Internal server error. Please try again later." });
     }
   },
 };
