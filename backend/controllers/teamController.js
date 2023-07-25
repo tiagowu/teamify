@@ -81,7 +81,18 @@ const teamController = {
       await team.removeMember(memberId);
       await user.removeTeam(teamId);
 
-      return res.status(200).json({ message: "Member removed successfully.", members: team.members });
+      await team.populate({
+        path: "members",
+        populate: { path: "user", select: "firstName lastName" },
+      });
+
+      const members = team.members.map((member) => ({
+        _id: member._id,
+        name: `${member.user.firstName} ${member.user.lastName}`,
+        role: member.role,
+      }));
+
+      return res.status(200).json({ message: "Member removed successfully.", members });
     } catch (err) {
       return res.status(500).json({ error: err.message });
     }
