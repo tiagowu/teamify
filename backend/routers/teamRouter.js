@@ -13,6 +13,7 @@ router.delete("/teams/:teamId", teamMiddleware.checkPermission(["Manager"]), tea
 router.delete("/teams/:teamId/leave", teamController.leaveTeam);
 
 router.post("/teams/:teamId/:userId/accept", teamMiddleware.checkPermission(["Manager", "Co-Manager"]), teamController.acceptPendingRequest);
+router.post("/teams/:teamId/:userId/decline", teamMiddleware.checkPermission(["Manager", "Co-Manager"]), teamController.declinePendingRequest);
 router.put("/teams/:teamId/members/:memberId", teamMiddleware.checkPermission(["Manager"]), teamController.updateMember);
 router.delete("/teams/:teamId/members/:memberId", teamMiddleware.checkPermission(["Manager"]), teamController.removeMember);
 
