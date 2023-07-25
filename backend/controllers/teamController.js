@@ -249,6 +249,31 @@ const teamController = {
       return res.status(500).json({ error: "Internal server error. Please try again later." });
     }
   },
+  updateMember: async (req, res) => {
+    try {
+      const member = req.member;
+      const team = req.team;
+      const updates = req.body;
+
+      Object.assign(member, updates);
+      await member.save();
+
+      await team.populate({
+        path: "members",
+        populate: { path: "user", select: "firstName lastName" },
+      });
+
+      const members = team.members.map((member) => ({
+        _id: member._id,
+        name: `${member.user.firstName} ${member.user.lastName}`,
+        role: member.role,
+      }));
+
+      return res.status(200).json({ message: "Member updated successfully.", members });
+    } catch (err) {
+      return res.status(500).json({ error: "Internal server error. Please try again later." });
+    }
+  },
 };
 
 module.exports = teamController;
