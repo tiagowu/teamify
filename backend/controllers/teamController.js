@@ -5,70 +5,6 @@ const Project = require("../models/projectModel");
 const Task = require("../models/taskModel");
 
 const teamController = {
-  deleteTeam: async (req, res) => {
-    try {
-      const { team } = req;
-
-      const deletedTeam = await Team.findByIdAndDelete(team._id);
-      if (!deletedTeam) {
-        return res.status(404).json({ error: "Team not found or already deleted." });
-      }
-
-      const memberIds = deletedTeam.members;
-      const userIds = await Member.distinct("user", { _id: { $in: memberIds } });
-
-      await Promise.all([
-        User.updateMany({ _id: { $in: userIds } }, { $pull: { teams: team._id } }),
-        Member.deleteMany({ _id: { $in: memberIds } }),
-        Project.deleteMany({ team: team._id }),
-      ]);
-
-      return res.status(200).json({ message: "Team and associated members deleted successfully." });
-    } catch (err) {
-      return res.status(500).json({ error: "Internal server error. Please try again later." });
-    }
-  },
-  acceptPendingRequest: async (req, res) => {
-    try {
-      const { team } = req;
-      const userId = req.params.userId;
-
-      const request = team.pendingRequests.find((request) => request.equals(userId));
-      if (!request) {
-        return res.status(404).json({ error: "User is not requesting to join the team." });
-      }
-
-      const member = await Member.createMember(userId, team._id);
-      await team.addMember(member._id);
-      await team.removeRequest(userId);
-      await User.findByIdAndUpdate(userId, { $push: { teams: team._id } });
-
-      const pendingRequests = await team.getPendingRequests();
-      const members = await team.getTeamMembers();
-
-      return res.status(200).json({ message: "User successfully added to the team.", pendingRequests, members });
-    } catch (err) {
-      return res.status(500).json({ error: "Internal server error. Please try again later." });
-    }
-  },
-  removeMember: async (req, res) => {
-    try {
-      const { team, member } = req;
-      const userId = member.user;
-
-      const user = await User.findById(userId);
-      await user.removeTeam(team._id);
-      await team.removeMember(member._id);
-      await Member.findByIdAndDelete(member._id);
-      await Project.updateMany({ members: member._id, team: team._id }, { $pull: { members: member._id } });
-
-      const members = await team.getTeamMembers();
-
-      return res.status(200).json({ message: "Member removed successfully.", members });
-    } catch (err) {
-      return res.status(500).json({ error: "Internal server error. Please try again later." });
-    }
-  },
   getUserTeams: async (req, res) => {
     try {
       const { user } = req;
@@ -124,6 +60,134 @@ const teamController = {
       return res.status(500).json({ error: "Internal server error. Please try again later." });
     }
   },
+  deleteTeam: async (req, res) => {
+    try {
+      const { team } = req;
+
+      const deletedTeam = await Team.findByIdAndDelete(team._id);
+      if (!deletedTeam) {
+        return res.status(404).json({ error: "Team not found or already deleted." });
+      }
+
+      const memberIds = deletedTeam.members;
+      const userIds = await Member.distinct("user", { _id: { $in: memberIds } });
+
+      await Promise.all([
+        User.updateMany({ _id: { $in: userIds } }, { $pull: { teams: team._id } }),
+        Member.deleteMany({ _id: { $in: memberIds } }),
+        Project.deleteMany({ team: team._id }),
+      ]);
+
+      return res.status(200).json({ message: "Team and associated members deleted successfully." });
+    } catch (err) {
+      return res.status(500).json({ error: "Internal server error. Please try again later." });
+    }
+  },
+  leaveTeam: async (req, res) => {
+    try {
+      const { team, user } = req;
+
+      const member = await Member.findOne({ user: user._id, team: team._id });
+      if (!member) {
+        return res.status(403).json({ error: "You are not a member of the team." });
+      }
+
+      if (member.role === "Manager") {
+        return res.status(400).json({ message: "You cannot leave the team as the manager." });
+      }
+
+      await user.removeTeam(team._id);
+      await team.removeMember(member._id);
+      await Member.findByIdAndDelete(member._id);
+      await Project.updateMany({ members: member._id, team: team._id }, { $pull: { members: member._id } });
+
+      return res.status(200).json({ message: "You have successfully left the team." });
+    } catch (err) {
+      return res.status(500).json({ error: "Internal server error. Please try again later." });
+    }
+  },
+  getPendingRequests: async (req, res) => {
+    try {
+      const { team } = req;
+
+      const pendingRequests = await team.getPendingRequests();
+      return res.status(200).json({ pendingRequests });
+    } catch (err) {
+      return res.status(500).json({ error: "Internal server error. Please try again later." });
+    }
+  },
+  acceptPendingRequest: async (req, res) => {
+    try {
+      const { team } = req;
+      const userId = req.params.userId;
+
+      const request = team.pendingRequests.find((request) => request.equals(userId));
+      if (!request) {
+        return res.status(404).json({ error: "User is not requesting to join the team." });
+      }
+
+      const member = await Member.createMember(userId, team._id);
+      await team.addMember(member._id);
+      await team.removeRequest(userId);
+      await User.findByIdAndUpdate(userId, { $push: { teams: team._id } });
+
+      const pendingRequests = await team.getPendingRequests();
+      const members = await team.getTeamMembers();
+
+      return res.status(200).json({ message: "User successfully added to the team.", pendingRequests, members });
+    } catch (err) {
+      return res.status(500).json({ error: "Internal server error. Please try again later." });
+    }
+  },
+  declinePendingRequest: async (req, res) => {
+    try {
+      const { team } = req;
+      const userId = req.params.userId;
+
+      const request = team.pendingRequests.find((request) => request.equals(userId));
+      if (!request) {
+        return res.status(404).json({ error: "User is not requesting to join the team." });
+      }
+
+      await team.removeRequest(userId);
+
+      const pendingRequests = await team.getPendingRequests();
+      return res.status(200).json({ pendingRequests });
+    } catch (err) {
+      return res.status(500).json({ error: "Internal server error. Please try again later." });
+    }
+  },
+  updateMember: async (req, res) => {
+    try {
+      const { member, team, body: updates } = req;
+
+      await Member.findByIdAndUpdate(member._id, updates, { new: true });
+
+      const members = await team.getTeamMembers();
+
+      return res.status(200).json({ message: "Member updated successfully.", members });
+    } catch (err) {
+      return res.status(500).json({ error: "Internal server error. Please try again later." });
+    }
+  },
+  removeMember: async (req, res) => {
+    try {
+      const { team, member } = req;
+      const userId = member.user;
+
+      const user = await User.findById(userId);
+      await user.removeTeam(team._id);
+      await team.removeMember(member._id);
+      await Member.findByIdAndDelete(member._id);
+      await Project.updateMany({ members: member._id, team: team._id }, { $pull: { members: member._id } });
+
+      const members = await team.getTeamMembers();
+
+      return res.status(200).json({ message: "Member removed successfully.", members });
+    } catch (err) {
+      return res.status(500).json({ error: "Internal server error. Please try again later." });
+    }
+  },
   createProject: async (req, res) => {
     try {
       const { team } = req;
@@ -167,70 +231,6 @@ const teamController = {
       const projects = await team.getProjects();
 
       return res.status(201).json({ message: "Project updated successfully.", project: updatedProject, projects });
-    } catch (err) {
-      return res.status(500).json({ error: "Internal server error. Please try again later." });
-    }
-  },
-  leaveTeam: async (req, res) => {
-    try {
-      const { team, user } = req;
-
-      const member = await Member.findOne({ user: user._id, team: team._id });
-      if (!member) {
-        return res.status(403).json({ error: "You are not a member of the team." });
-      }
-
-      if (member.role === "Manager") {
-        return res.status(400).json({ message: "You cannot leave the team as the manager." });
-      }
-
-      await user.removeTeam(team._id);
-      await team.removeMember(member._id);
-      await Member.findByIdAndDelete(member._id);
-      await Project.updateMany({ members: member._id, team: team._id }, { $pull: { members: member._id } });
-
-      return res.status(200).json({ message: "You have successfully left the team." });
-    } catch (err) {
-      return res.status(500).json({ error: "Internal server error. Please try again later." });
-    }
-  },
-  updateMember: async (req, res) => {
-    try {
-      const { member, team, body: updates } = req;
-
-      await Member.findByIdAndUpdate(member._id, updates, { new: true });
-
-      const members = await team.getTeamMembers();
-
-      return res.status(200).json({ message: "Member updated successfully.", members });
-    } catch (err) {
-      return res.status(500).json({ error: "Internal server error. Please try again later." });
-    }
-  },
-  getPendingRequests: async (req, res) => {
-    try {
-      const { team } = req;
-
-      const pendingRequests = await team.getPendingRequests();
-      return res.status(200).json({ pendingRequests });
-    } catch (err) {
-      return res.status(500).json({ error: "Internal server error. Please try again later." });
-    }
-  },
-  declinePendingRequest: async (req, res) => {
-    try {
-      const { team } = req;
-      const userId = req.params.userId;
-
-      const request = team.pendingRequests.find((request) => request.equals(userId));
-      if (!request) {
-        return res.status(404).json({ error: "User is not requesting to join the team." });
-      }
-
-      await team.removeRequest(userId);
-
-      const pendingRequests = await team.getPendingRequests();
-      return res.status(200).json({ pendingRequests });
     } catch (err) {
       return res.status(500).json({ error: "Internal server error. Please try again later." });
     }
