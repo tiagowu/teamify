@@ -196,23 +196,11 @@ const teamController = {
   },
   updateMember: async (req, res) => {
     try {
-      const member = req.member;
-      const team = req.team;
-      const updates = req.body;
+      const { member, team, body: updates } = req;
 
-      Object.assign(member, updates);
-      await member.save();
+      await Member.findByIdAndUpdate(member._id, updates, { new: true });
 
-      await team.populate({
-        path: "members",
-        populate: { path: "user", select: "firstName lastName" },
-      });
-
-      const members = team.members.map((member) => ({
-        _id: member._id,
-        name: `${member.user.firstName} ${member.user.lastName}`,
-        role: member.role,
-      }));
+      const members = await team.getTeamMembers();
 
       return res.status(200).json({ message: "Member updated successfully.", members });
     } catch (err) {
