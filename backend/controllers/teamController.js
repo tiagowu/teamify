@@ -173,8 +173,7 @@ const teamController = {
   },
   leaveTeam: async (req, res) => {
     try {
-      const user = req.user;
-      const team = req.team;
+      const { team, user } = req;
 
       const member = await Member.findOne({ user: user._id, team: team._id });
       if (!member) {
@@ -185,15 +184,11 @@ const teamController = {
         return res.status(400).json({ message: "You cannot leave the team as the manager." });
       }
 
-      await user.removeTeam(teamId);
+      await user.removeTeam(team._id);
       await team.removeMember(member._id);
+      await Member.findByIdAndDelete(member._id);
+      await Project.updateMany({ members: member._id, team: team._id }, { $pull: { members: member._id } });
 
-      const projects = await Project.find({ members: member._id, team: team._id });
-      for (const project of projects) {
-        await Project.findByIdAndUpdate(project._id, { $pull: { members: member._id } });
-      }
-
-      await member.deleteOne();
       return res.status(200).json({ message: "You have successfully left the team." });
     } catch (err) {
       return res.status(500).json({ error: "Internal server error. Please try again later." });
