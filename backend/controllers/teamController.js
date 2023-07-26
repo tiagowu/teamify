@@ -71,21 +71,20 @@ const teamController = {
   },
   getUserTeams: async (req, res) => {
     try {
-      const user = req.user;
-      const teams = await Team.find({ _id: { $in: user.teams } });
+      const { user } = req;
 
-      const teamData = await Promise.all(
-        teams.map(async (team) => {
-          const member = await Member.findOne({ user: user._id, team: team._id });
-          const role = member ? member.role : null;
-          return {
-            _id: team._id,
-            name: team.name,
-            description: team.description,
-            role: role,
-          };
-        })
-      );
+      const teams = await Team.find({ _id: { $in: user.teams } }).populate({
+        path: "members",
+        match: { user: user._id },
+        select: "role",
+      });
+
+      const teamData = teams.map((team) => ({
+        _id: team._id,
+        name: team.name,
+        description: team.description,
+        role: team.members[0].role,
+      }));
 
       res.json({ teams: teamData });
     } catch (err) {
