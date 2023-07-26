@@ -1,3 +1,4 @@
+const mongoose = require("mongoose");
 const Team = require("../models/teamModel.js");
 const Member = require("../models/memberModel.js");
 
@@ -5,6 +6,12 @@ const teamMiddleware = {
   verifyTeamId: async (req, res, next) => {
     try {
       const teamId = req.params.teamId;
+
+      const isValidObjectId = mongoose.Types.ObjectId.isValid(teamId);
+
+      if (!isValidObjectId) {
+        return res.status(400).json({ error: "Team not found." });
+      }
 
       const team = await Team.findById(teamId);
       if (!team) {
