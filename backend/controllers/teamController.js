@@ -53,40 +53,20 @@ const teamController = {
   },
   removeMember: async (req, res) => {
     try {
-      const team = req.team;
-      const memberId = req.member._id;
-      const teamId = team._id;
-      const userId = req.member.user;
-
-      if (!team.members.includes(memberId)) {
-        return res.status(400).json({ error: "Member does not belong to the team." });
-      }
-
-      const projects = await Project.find({ members: memberId, team: teamId });
-      for (const project of projects) {
-        await Project.findByIdAndUpdate(project._id, { $pull: { members: memberId } });
-      }
+      const { team, member } = req;
+      const userId = member.user;
 
       const user = await User.findById(userId);
+      await user.removeTeam(team._id);
+      await team.removeMember(member._id);
+      await Member.findByIdAndDelete(member._id);
+      await Project.updateMany({ members: member._id, team: team._id }, { $pull: { members: member._id } });
 
-      await Member.findByIdAndDelete(memberId);
-      await team.removeMember(memberId);
-      await user.removeTeam(teamId);
-
-      await team.populate({
-        path: "members",
-        populate: { path: "user", select: "firstName lastName" },
-      });
-
-      const members = team.members.map((member) => ({
-        _id: member._id,
-        name: `${member.user.firstName} ${member.user.lastName}`,
-        role: member.role,
-      }));
+      const members = await team.getTeamMembers();
 
       return res.status(200).json({ message: "Member removed successfully.", members });
     } catch (err) {
-      return res.status(500).json({ error: err.message });
+      return res.status(500).json({ error: "Internal server error. Please try again later." });
     }
   },
   getUserTeams: async (req, res) => {
