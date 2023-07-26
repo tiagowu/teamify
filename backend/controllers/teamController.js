@@ -284,6 +284,24 @@ const teamController = {
       return res.status(500).json({ error: "Internal server error. Please try again later." });
     }
   },
+  declinePendingRequest: async (req, res) => {
+    try {
+      const { team } = req;
+      const userId = req.params.userId;
+
+      const request = team.pendingRequests.find((request) => request.equals(userId));
+      if (!request) {
+        return res.status(404).json({ error: "User is not requesting to join the team." });
+      }
+
+      await team.removeRequest(userId);
+
+      const pendingRequests = team.getPendingRequests();
+      return res.status(200).json({ pendingRequests });
+    } catch (err) {
+      return res.status(500).json({ error: "Internal server error. Please try again later." });
+    }
+  },
 };
 
 module.exports = teamController;
