@@ -30,8 +30,8 @@ const teamController = {
   },
   acceptPendingRequest: async (req, res) => {
     try {
+      const { team } = req;
       const userId = req.params.userId;
-      const team = req.team;
 
       const request = team.pendingRequests.find((request) => request.equals(userId));
       if (!request) {
@@ -41,20 +41,10 @@ const teamController = {
       const member = await Member.createMember(userId, team._id);
       await team.addMember(member._id);
       await team.removeRequest(userId);
-
       await User.findByIdAndUpdate(userId, { $push: { teams: team._id } });
-      const pendingRequests = await User.find({ _id: { $in: team.pendingRequests } }, "firstName lastName");
 
-      await team.populate({
-        path: "members",
-        populate: { path: "user", select: "firstName lastName" },
-      });
-
-      const members = team.members.map((member) => ({
-        _id: member._id,
-        name: `${member.user.firstName} ${member.user.lastName}`,
-        role: member.role,
-      }));
+      const pendingRequests = await team.getPendingRequests();
+      const members = await team.getTeamMembers();
 
       return res.status(200).json({ message: "User successfully added to the team.", pendingRequests, members });
     } catch (err) {
