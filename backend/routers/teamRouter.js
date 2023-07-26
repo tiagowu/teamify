@@ -6,6 +6,7 @@ const teamMiddleware = require("../middlewares/teamMiddleware");
 router.use(authMiddleware.verifyToken);
 router.param("teamId", teamMiddleware.verifyTeamId);
 router.param("memberId", teamMiddleware.verifyMemberId);
+router.param("projectId", teamMiddleware.verifyProjectId);
 
 router.get("/teams", teamController.getUserTeams);
 router.get("/teams/:teamId", teamController.getTeamById);
