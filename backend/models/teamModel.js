@@ -84,6 +84,19 @@ teamSchema.methods.removeMember = async function (memberId) {
   await this.save();
 };
 
+teamSchema.methods.getTeamMembers = async function () {
+  await this.populate({
+    path: "members",
+    populate: { path: "user", select: "firstName lastName" },
+  });
+
+  return this.members.map(({ _id, user, role }) => ({
+    _id,
+    name: `${user.firstName} ${user.lastName}`,
+    role,
+  }));
+};
+
 teamSchema.methods.addRequest = async function (userId) {
   this.pendingRequests.push(userId);
   await this.save();
@@ -94,6 +107,11 @@ teamSchema.methods.removeRequest = async function (userId) {
   await this.save();
 };
 
+teamSchema.methods.getPendingRequests = async function () {
+  await this.populate("pendingRequests", "firstName lastName");
+  return this.pendingRequests;
+};
+
 teamSchema.methods.addProject = async function (projectId) {
   this.projects.push(projectId);
   await this.save();
@@ -102,6 +120,23 @@ teamSchema.methods.addProject = async function (projectId) {
 teamSchema.methods.removeProject = async function (projectId) {
   this.projects.pull(projectId);
   await this.save();
+};
+
+teamSchema.methods.getProjects = async function () {
+  await this.populate({
+    path: "projects",
+    populate: {
+      path: "members",
+      populate: {
+        path: "user",
+        select: "firstName lastName",
+      },
+      select: "user",
+    },
+    select: "_id name description members deadline isCompleted",
+  });
+
+  return this.projects;
 };
 
 module.exports = mongoose.model("Team", teamSchema);
