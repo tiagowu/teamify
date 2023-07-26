@@ -209,9 +209,9 @@ const teamController = {
   },
   getPendingRequests: async (req, res) => {
     try {
-      const team = req.team;
+      const { team } = req;
 
-      const pendingRequests = await User.find({ _id: { $in: team.pendingRequests } }, "firstName lastName");
+      const pendingRequests = team.getPendingRequests();
       return res.status(200).json({ pendingRequests });
     } catch (err) {
       return res.status(500).json({ error: "Internal server error. Please try again later." });
