@@ -79,14 +79,14 @@ const teamController = {
         select: "role",
       });
 
-      const teamData = teams.map((team) => ({
+      const teamsData = teams.map((team) => ({
         _id: team._id,
         name: team.name,
         description: team.description,
         role: team.members[0].role,
       }));
 
-      res.json({ teams: teamData });
+      return res.status(200).json({ teams: teamsData });
     } catch (err) {
       return res.status(500).json({ error: "Internal server error. Please try again later." });
     }
@@ -130,7 +130,7 @@ const teamController = {
       const { name, description, members, deadline } = req.body;
 
       const project = await Project.createProject(team._id, name, description, members, deadline);
-      team.addProject(project._id);
+      await team.addProject(project._id);
 
       await Promise.all(
         members.map(async (memberId) => {
@@ -211,7 +211,7 @@ const teamController = {
     try {
       const { team } = req;
 
-      const pendingRequests = team.getPendingRequests();
+      const pendingRequests = await team.getPendingRequests();
       return res.status(200).json({ pendingRequests });
     } catch (err) {
       return res.status(500).json({ error: "Internal server error. Please try again later." });
@@ -229,7 +229,7 @@ const teamController = {
 
       await team.removeRequest(userId);
 
-      const pendingRequests = team.getPendingRequests();
+      const pendingRequests = await team.getPendingRequests();
       return res.status(200).json({ pendingRequests });
     } catch (err) {
       return res.status(500).json({ error: "Internal server error. Please try again later." });
