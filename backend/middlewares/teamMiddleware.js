@@ -46,11 +46,16 @@ const teamMiddleware = {
   },
   verifyMemberId: async (req, res, next) => {
     try {
+      const team = req.team;
       const memberId = req.params.memberId;
 
       const member = await Member.findById(memberId);
       if (!member) {
         return res.status(404).json({ error: "Member not found." });
+      }
+
+      if (!team.members.includes(member._id)) {
+        return res.status(404).json({ error: "Member does not belong to the team." });
       }
 
       req.member = member;
