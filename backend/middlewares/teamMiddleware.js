@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const Team = require("../models/teamModel.js");
 const Member = require("../models/memberModel.js");
+const Project = require("../models/projectModel.js");
 
 const teamMiddleware = {
   verifyTeamId: async (req, res, next) => {
@@ -59,6 +60,26 @@ const teamMiddleware = {
       }
 
       req.member = member;
+      next();
+    } catch (err) {
+      return res.status(500).json({ error: "Internal server error. Please try again later." });
+    }
+  },
+  verifyProjectId: async (req, res, next) => {
+    try {
+      const team = req.team;
+      const projectId = req.params.projectId;
+
+      const project = await Project.findById(projectId);
+      if (!project) {
+        return res.status(404).json({ error: "Member not found." });
+      }
+
+      if (!team.projects.includes(project._id)) {
+        return res.status(404).json({ error: "Project does not belong to the team." });
+      }
+
+      req.project = project;
       next();
     } catch (err) {
       return res.status(500).json({ error: "Internal server error. Please try again later." });
