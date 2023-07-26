@@ -150,31 +150,23 @@ const teamController = {
   },
   updateProject: async (req, res) => {
     try {
-      const userId = req.user._id;
-      const { teamId, projectId } = req.params;
-      const { isCompleted } = req.body;
+      const { project, user, team, body: updates } = req;
 
-      const member = await Member.findOne({ user: userId, team: teamId });
+      const member = await Member.findOne({ user: user._id, team: team._id });
       if (!member) {
         return res.status(403).json({ error: "You are not a member of the team." });
       }
 
-      const project = await Project.findOne({ _id: projectId, team: teamId }).populate("members");
-      if (!project) {
-        return res.status(404).json({ error: "Project not found." });
-      }
-
-      const userIsManager = member.role === "Manager";
+      await project.populate("members");
       const userIsMember = project.members.some((member) => member.user.equals(req.user._id));
-      if (!userIsManager && !userIsMember) {
+      if (member.role !== "Manager" && !userIsMember) {
         return res.status(403).json({ error: "You are not authorized to update the project." });
       }
 
-      project.isCompleted = isCompleted;
+      const updatedProject = await Project.findByIdAndUpdate(project._id, updates, { new: true });
+      const projects = await team.getProjects();
 
-      await project.save();
-
-      return res.status(201).json({ message: "Project updated successfully.", project });
+      return res.status(201).json({ message: "Project updated successfully.", project: updatedProject, projects });
     } catch (err) {
       return res.status(500).json({ error: "Internal server error. Please try again later." });
     }
