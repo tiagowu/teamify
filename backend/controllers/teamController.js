@@ -126,18 +126,18 @@ const teamController = {
   },
   createProject: async (req, res) => {
     try {
+      const { team } = req;
       const { name, description, members, deadline } = req.body;
-      const team = req.team;
 
       const project = await Project.createProject(team._id, name, description, members, deadline);
       team.addProject(project._id);
 
-      for (const memberId of members) {
-        const member = await Member.findById(memberId);
-        if (member) {
-          member.addProject(project._id);
-        }
-      }
+      await Promise.all(
+        members.map(async (memberId) => {
+          const member = await Member.findById(memberId);
+          await member.addProject(project._id);
+        })
+      );
 
       return res.status(201).json({ message: "Project created successfully.", project });
     } catch (err) {
