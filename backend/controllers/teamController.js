@@ -7,9 +7,9 @@ const Task = require("../models/taskModel");
 const teamController = {
   deleteTeam: async (req, res) => {
     try {
-      const teamId = req.team._id;
+      const { team } = req;
 
-      const deletedTeam = await Team.findByIdAndDelete(teamId);
+      const deletedTeam = await Team.findByIdAndDelete(team._id);
       if (!deletedTeam) {
         return res.status(404).json({ error: "Team not found or already deleted." });
       }
@@ -17,9 +17,11 @@ const teamController = {
       const memberIds = deletedTeam.members;
       const userIds = await Member.distinct("user", { _id: { $in: memberIds } });
 
-      await Member.deleteMany({ _id: { $in: memberIds } });
-      await User.updateMany({ _id: { $in: userIds } }, { $pull: { teams: teamId } });
-      await Project.deleteMany({ team: teamId });
+      await Promise.all([
+        User.updateMany({ _id: { $in: userIds } }, { $pull: { teams: team._id } }),
+        Member.deleteMany({ _id: { $in: memberIds } }),
+        Project.deleteMany({ team: team._id }),
+      ]);
 
       return res.status(200).json({ message: "Team and associated members deleted successfully." });
     } catch (err) {
