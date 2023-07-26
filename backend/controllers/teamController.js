@@ -93,46 +93,33 @@ const teamController = {
   },
   getTeamById: async (req, res) => {
     try {
-      const userId = req.user._id;
-      const team = req.team;
+      const { team, user } = req;
 
-      const member = await Member.findOne({ user: userId, team: team._id });
+      const member = await Member.findOne({ user: user._id, team: team._id });
       if (!member) {
-        return res.status(403).json({ error: "You are not a member of the team." });
+        return res.status(403).json({ error: "Sorry, you are not authorized to view this team." });
       }
 
-      await team.populate("projects");
-      await team.populate({
-        path: "projects",
-        populate: { path: "members", populate: { path: "user", select: "firstName lastName" } },
-      });
-      await team.populate("tasks");
-      await team.populate({
-        path: "members",
-        populate: { path: "user", select: "firstName lastName" },
-      });
+      const pendingRequests = member.role !== "Member" ? await team.getPendingRequests() : [];
+      const projects = await team
+        .getProjects()
+        .then((teamProjects) =>
+          teamProjects.filter((project) => member.role === "Manager" || project.members.some((projMember) => projMember._id.equals(member._id)))
+        );
 
-      const pendingRequests = await User.find({ _id: { $in: team.pendingRequests } }, "firstName lastName");
-      const projects = team.projects.filter((project) => project.members.some((projMember) => projMember._id.equals(member._id)));
-      const members = team.members.map((member) => ({
-        _id: member._id,
-        name: `${member.user.firstName} ${member.user.lastName}`,
-        role: member.role,
-      }));
+      const members = await team.getTeamMembers();
 
       const teamData = {
         code: team.code,
         name: team.name,
         description: team.description,
-        projects: member.role === "Manager" ? team.projects : projects,
         role: member.role,
         members,
-        ...(member.role !== "Member" && { pendingRequests }),
+        pendingRequests,
+        projects,
       };
 
-      return res.status(200).json({
-        team: teamData,
-      });
+      return res.status(200).json({ team: teamData });
     } catch (err) {
       return res.status(500).json({ error: "Internal server error. Please try again later." });
     }
