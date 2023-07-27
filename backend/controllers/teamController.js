@@ -190,6 +190,29 @@ const teamController = {
       return res.status(500).json({ error: "Internal server error. Please try again later." });
     }
   },
+  getUserProjects: async (req, res) => {
+    try {
+      const { user } = req;
+
+      const members = await Member.find({ user: user._id }).populate({
+        path: "projects",
+        populate: {
+          path: "members",
+          populate: {
+            path: "user",
+            select: "firstName lastName",
+          },
+          select: "user",
+        },
+        select: "-createdAt -updatedAt -__v",
+      });
+      const projectsData = members.flatMap((member) => member.projects);
+
+      return res.status(200).json({ projects: projectsData });
+    } catch (err) {
+      return res.status(500).json({ error: err.message });
+    }
+  },
   createProject: async (req, res) => {
     try {
       const { team } = req;
