@@ -9,11 +9,13 @@ const teamController = {
     try {
       const { user } = req;
 
-      const teams = await Team.find({ _id: { $in: user.teams } }).populate({
-        path: "members",
-        match: { user: user._id },
-        select: "role",
-      });
+      const teams = await Team.find({ _id: { $in: user.teams } })
+        .populate({
+          path: "members",
+          match: { user: user._id },
+          select: "role",
+        })
+        .select("name description");
 
       const teamsData = teams.map((team) => ({
         _id: team._id,
