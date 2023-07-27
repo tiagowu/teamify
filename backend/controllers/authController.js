@@ -92,14 +92,14 @@ const authController = {
 
       const newAccessToken = createAccessToken({ id: decoded.id });
 
-      const user = await User.findOne({ _id: decoded.id });
+      const user = await User.findOne({ _id: decoded.id }).select("firstName lastName teams");
       if (!user) {
         return res.redirect("/");
       }
 
       return res.status(200).json({ accessToken: newAccessToken, user });
     } catch (err) {
-      return res.status(500).json({ error: err.message });
+      return res.status(500).json({ error: "Internal server error. Please try again later." });
     }
   },
 };
