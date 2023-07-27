@@ -19,6 +19,7 @@ router.post("/teams/:teamId/:userId/decline", teamMiddleware.checkPermission(["M
 router.put("/teams/:teamId/members/:memberId", teamMiddleware.checkPermission(["Manager"]), teamController.updateMember);
 router.delete("/teams/:teamId/members/:memberId", teamMiddleware.checkPermission(["Manager"]), teamController.removeMember);
 
+router.get("/projects", teamController.getUserProjects);
 router.post("/teams/:teamId/projects", teamMiddleware.checkPermission(["Manager", "Co-Manager"]), teamController.createProject);
 router.put("/teams/:teamId/projects/:projectId", teamController.updateProject);
 
