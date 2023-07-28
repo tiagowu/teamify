@@ -27,6 +27,15 @@ export const leaveTeam = async (teamId, token) => {
   }
 };
 
+export const getPendingRequest = async (teamId, token) => {
+  try {
+    const response = await getData(`teams/${teamId}/pending-requests`, token);
+    return response.data;
+  } catch (err) {
+    throw err;
+  }
+};
+
 export const acceptRequest = async (teamId, userId, token) => {
   try {
     const response = await postData(`teams/${teamId}/${userId}/accept`, {}, token);
@@ -48,6 +57,15 @@ export const declineRequest = async (teamId, userId, token) => {
 export const updateMember = async (data, teamId, memberId, token) => {
   try {
     const response = await putData(`teams/${teamId}/members/${memberId}`, data, token);
+    return response.data;
+  } catch (err) {
+    throw err;
+  }
+};
+
+export const removeMember = async (teamId, memberId, token) => {
+  try {
+    const response = await deleteData(`teams/${teamId}/members/${memberId}`, token);
     return response.data;
   } catch (err) {
     throw err;
