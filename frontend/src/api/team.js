@@ -1,4 +1,13 @@
-import { getData, postData } from "./axios";
+import { deleteData, getData, postData, putData } from "./axios";
+
+export const getTeams = async (token) => {
+  try {
+    const response = await getData(`teams`, token);
+    return response.data;
+  } catch (err) {
+    throw err;
+  }
+};
 
 export const getTeamById = async (teamId, token) => {
   try {
@@ -66,6 +75,15 @@ export const updateMember = async (data, teamId, memberId, token) => {
 export const removeMember = async (teamId, memberId, token) => {
   try {
     const response = await deleteData(`teams/${teamId}/members/${memberId}`, token);
+    return response.data;
+  } catch (err) {
+    throw err;
+  }
+};
+
+export const getProjects = async (token) => {
+  try {
+    const response = await getData(`projects`, token);
     return response.data;
   } catch (err) {
     throw err;
