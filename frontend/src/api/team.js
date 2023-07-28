@@ -27,6 +27,24 @@ export const leaveTeam = async (teamId, token) => {
   }
 };
 
+export const acceptRequest = async (teamId, userId, token) => {
+  try {
+    const response = await postData(`teams/${teamId}/${userId}/accept`, {}, token);
+    return response.data;
+  } catch (err) {
+    throw err;
+  }
+};
+
+export const declineRequest = async (teamId, userId, token) => {
+  try {
+    const response = await postData(`teams/${teamId}/${userId}/decline`, {}, token);
+    return response.data;
+  } catch (err) {
+    throw err;
+  }
+};
+
 export const createProject = async (data, teamId, token) => {
   try {
     console.log(teamId);
