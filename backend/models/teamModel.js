@@ -133,7 +133,7 @@ teamSchema.methods.getProjects = async function () {
       },
       select: "user",
     },
-    select: "_id name description members deadline isCompleted",
+    select: "-createdAt -updatedAt -__v",
   });
 
   return this.projects;
