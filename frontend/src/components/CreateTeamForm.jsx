@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 import { createTeam } from "../api/user";
 import useAuth from "../hooks/useAuth";
@@ -9,13 +10,15 @@ const CreateTeamForm = () => {
   const [data, setData] = useState({ name: "", description: "" });
   const { auth } = useAuth();
   const { setMessage } = useMessage();
+  const navigate = useNavigate();
 
   const handleCreateTeam = async (e) => {
     e.preventDefault();
     try {
       const response = await createTeam(data, auth.accessToken);
-      setMessage({ type: "success", content: response.data.message });
-      window.location.reload(); // TODO: Navigate to newly created team homepage
+      setMessage({ type: "success", content: response.message });
+      const teamId = response.teamId;
+      navigate(`/team/${teamId}`, { replace: true });
     } catch (err) {
       setMessage({ type: "error", content: err.response.data.error });
     }
@@ -26,6 +29,12 @@ const CreateTeamForm = () => {
     const { name, value } = e.target;
     setData((prevData) => ({ ...prevData, [name]: value }));
   };
+
+  useEffect(() => {
+    return () => {
+      setMessage({ type: "", content: "" });
+    };
+  }, [setMessage]);
 
   const fields = [
     { id: "create-name", type: "text", label: "Name", name: "name" },
