@@ -21,7 +21,7 @@ const JoinTeamForm = () => {
     e.preventDefault();
     try {
       const response = await joinTeam({ code: data.code }, auth.accessToken);
-      setMessage({ type: "success", content: response.data.message });
+      setMessage({ type: "success", content: response.message });
     } catch (err) {
       setMessage({ type: "error", content: err.response.data.error });
     }
