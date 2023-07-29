@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 
 import { createProject } from "../api/team";
@@ -35,42 +35,44 @@ const CreateProjectForm = ({ members }) => {
   const handleCreateProject = async (e) => {
     e.preventDefault();
     try {
-      const response = await createProject({ ...data, deadline: new Date(data.deadline) }, teamId, auth.accessToken);
-      console.log(response.data);
-      setMessage({ type: "success", content: response.data.message });
+      const modifiedData = { ...data, deadline: new Date(data.deadline) };
+      const response = await createProject(modifiedData, teamId, auth.accessToken);
+      setMessage({ type: "success", content: response.message });
       window.location.reload();
     } catch (err) {
-      setMessage({ type: "error", content: err.response.data.error });
+      if (err?.response?.data?.errors?.length > 0) {
+        setMessage({ type: "error", content: err.response.data.errors[0] });
+      } else {
+        setMessage({ type: "error", content: err.response.data.error });
+      }
     }
-    setData({ name: "", description: "", members: [], deadline: "" });
   };
 
   const renderAdditionalFields = () => {
-    return (
-      <>
-        <ListSelect handleChange={handleDataChange} label="Members" list={members} name="members" selected={data.members} />
-        <label className="text-blue-400 text-sm mt-4">Deadline</label>
-        <input
-          type="date"
-          id="create-project-date"
-          className="border border-gray-300 p-2 rounded"
-          name="deadline"
-          value={data.deadline}
-          onChange={handleDataChange}
-        />
-      </>
-    );
+    return <ListSelect handleChange={handleDataChange} label="Members" list={members} name="members" selected={data.members} />;
   };
+
+  const currentDate = new Date().toISOString().slice(0, 10);
 
   const fields = [
     { id: "create-project-name", type: "text", label: "Name", name: "name" },
     { id: "create-project-description", type: "text", label: "Description", name: "description" },
+    { id: "create-project-deadline", type: "date", label: "Deadline", name: "deadline", min: currentDate },
   ];
+
+  const disabled = data.members.length === 0;
+
+  useEffect(() => {
+    return () => {
+      setMessage({ type: "", content: "" });
+    };
+  }, [setMessage]);
 
   return (
     <Form
       buttonText="Create"
       data={data}
+      disabled={disabled}
       fields={fields}
       handleChange={handleDataChange}
       handleSubmit={handleCreateProject}
