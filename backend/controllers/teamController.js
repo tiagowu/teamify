@@ -1,8 +1,9 @@
+const Announcement = require("../models/announcementModel");
 const Member = require("../models/memberModel");
-const Team = require("../models/teamModel");
-const User = require("../models/userModel");
 const Project = require("../models/projectModel");
 const Task = require("../models/taskModel");
+const Team = require("../models/teamModel");
+const User = require("../models/userModel");
 
 const teamController = {
   getUserTeams: async (req, res) => {
@@ -258,6 +259,23 @@ const teamController = {
       return res.status(201).json({ message: "Project updated successfully.", project: updatedProject, projects });
     } catch (err) {
       return res.status(500).json({ error: "Internal server error. Please try again later." });
+    }
+  },
+  createAnnouncement: async (req, res) => {
+    try {
+      const { team, user, body: data } = req;
+
+      const member = await Member.findOne({ user: user._id, team: team._id });
+      if (!member) {
+        return res.status(403).json({ error: "You are not a member of the team." });
+      }
+
+      const announcement = await Announcement.createAnnouncement({ ...data, author: member._id, team: team._id });
+      await team.addAnnouncement(announcement._id);
+
+      return res.status(201).json({ message: "Announcement created successfully.", announcement });
+    } catch (err) {
+      return res.status(500).json({ error: err.message });
     }
   },
 };
