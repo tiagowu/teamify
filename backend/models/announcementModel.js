@@ -25,4 +25,10 @@ const announcementSchema = new Schema(
   { timestamps: true }
 );
 
+announcementSchema.statics.createAnnouncement = async function (data) {
+  const announcement = new this(data);
+  await announcement.save();
+  return announcement;
+};
+
 module.exports = mongoose.model("Announcement", announcementSchema);
