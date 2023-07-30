@@ -39,14 +39,14 @@ const teamController = {
         return res.status(403).json({ error: "Sorry, you are not authorized to view this team." });
       }
 
+      const members = await team.getTeamMembers();
       const pendingRequests = member.role !== "Member" ? await team.getPendingRequests() : [];
       const projects = await team
         .getProjects()
         .then((teamProjects) =>
           teamProjects.filter((project) => member.role === "Manager" || project.members.some((projMember) => projMember._id.equals(member._id)))
         );
-
-      const members = await team.getTeamMembers();
+      const announcements = await team.getAnnouncements();
 
       const teamData = {
         code: team.code,
@@ -56,6 +56,7 @@ const teamController = {
         members,
         pendingRequests,
         projects,
+        announcements,
       };
 
       return res.status(200).json({ team: teamData });
