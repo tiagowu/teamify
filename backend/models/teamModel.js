@@ -40,6 +40,12 @@ const teamSchema = new mongoose.Schema(
         ref: "Task",
       },
     ],
+    announcements: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "Announcement",
+      },
+    ],
   },
   { timestamps: true }
 );
@@ -137,6 +143,39 @@ teamSchema.methods.getProjects = async function () {
   });
 
   return this.projects;
+};
+
+teamSchema.methods.addAnnouncement = async function (announcementId) {
+  this.announcements.push(announcementId);
+  await this.save();
+};
+
+teamSchema.methods.removeAnnouncement = async function (announcementId) {
+  this.announcements.pull(announcementId);
+  await this.save();
+};
+
+teamSchema.methods.getAnnouncements = async function () {
+  await this.populate({
+    path: "announcements",
+    populate: [
+      {
+        path: "author",
+        populate: {
+          path: "user",
+          select: "firstName lastName",
+        },
+        select: "user",
+      },
+      {
+        path: "team",
+        select: "name",
+      },
+    ],
+    select: "-updatedAt -__v",
+  });
+
+  return this.announcements;
 };
 
 module.exports = mongoose.model("Team", teamSchema);
