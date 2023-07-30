@@ -23,4 +23,6 @@ router.get("/projects", teamController.getUserProjects);
 router.post("/teams/:teamId/projects", teamMiddleware.checkPermission(["Manager", "Co-Manager"]), teamController.createProject);
 router.put("/teams/:teamId/projects/:projectId", teamController.updateProject);
 
+router.post("/teams/:teamId/announcements", teamMiddleware.checkPermission(["Manager", "Co-Manager"]), teamController.createAnnouncement);
+
 module.exports = router;
