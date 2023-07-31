@@ -46,6 +46,10 @@ const teamController = {
         .then((teamProjects) =>
           teamProjects.filter((project) => member.role === "Manager" || project.members.some((projMember) => projMember._id.equals(member._id)))
         );
+
+      const tasks = await team
+        .getTasks()
+        .then((teamTasks) => teamTasks.filter((task) => member.role === "Manager" || task.assignedTo.equals(member._id)));
       const announcements = await team.getAnnouncements();
 
       const teamData = {
@@ -56,6 +60,7 @@ const teamController = {
         members,
         pendingRequests,
         projects,
+        tasks,
         announcements,
       };
 
