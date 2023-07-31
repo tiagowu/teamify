@@ -262,6 +262,25 @@ const teamController = {
       return res.status(500).json({ error: "Internal server error. Please try again later." });
     }
   },
+  createTask: async (req, res) => {
+    try {
+      const { team, body: data } = req;
+
+      const task = await Task.createTask({ ...data, team: team._id });
+      await team.addTask(task._id);
+
+      const member = await Member.findById(data.assignedTo);
+      await member.addTask(task._id);
+
+      return res.status(201).json({ message: "Task created successfully.", task });
+    } catch (err) {
+      if (err.name === "ValidationError") {
+        const validationErrors = Object.values(err.errors).map((error) => error.message);
+        return res.status(400).json({ errors: validationErrors });
+      }
+      return res.status(500).json({ error: err.message });
+    }
+  },
   getUserAnnouncements: async (req, res) => {
     try {
       const { user } = req;
