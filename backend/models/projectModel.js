@@ -10,13 +10,13 @@ const projectSchema = new mongoose.Schema(
     },
     name: {
       type: String,
-      required: [true, "Please provide project name."],
       maxlength: [50, "Project name cannot exceed 50 characters."],
+      required: [true, "Please provide project name."],
     },
     description: {
       type: String,
-      required: [true, "Please provide project description."],
       maxlength: [200, "Project description cannot exceed 200 characters."],
+      required: [true, "Please provide project description."],
     },
     members: [
       {
