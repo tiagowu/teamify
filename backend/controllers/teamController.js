@@ -286,6 +286,29 @@ const teamController = {
       return res.status(500).json({ error: err.message });
     }
   },
+  updateTask: async (req, res) => {
+    try {
+      const { task, user, team, body: updates } = req;
+
+      const member = await Member.findOne({ user: user._id, team: team._id });
+      if (!member) {
+        return res.status(403).json({ error: "You are not a member of the team." });
+      }
+
+      await task.populate("assignedTo");
+      const userIsMember = task.assignedTo.user.equals(req.user._id);
+      if (member.role !== "Manager" && !userIsMember) {
+        return res.status(403).json({ error: "You are not authorized to update the project." });
+      }
+
+      const updatedTask = await Task.findByIdAndUpdate(task._id, updates, { new: true });
+      const tasks = await team.getTasks();
+
+      return res.status(201).json({ message: "Project updated successfully.", task: updatedTask, tasks });
+    } catch (err) {
+      return res.status(500).json({ error: err.message });
+    }
+  },
   getUserAnnouncements: async (req, res) => {
     try {
       const { user } = req;
