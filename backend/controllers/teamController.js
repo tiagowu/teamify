@@ -267,6 +267,29 @@ const teamController = {
       return res.status(500).json({ error: "Internal server error. Please try again later." });
     }
   },
+  getUserTasks: async (req, res) => {
+    try {
+      const { user } = req;
+
+      const members = await Member.find({ user: user._id }).populate({
+        path: "tasks",
+        populate: {
+          path: "assignedTo",
+          populate: {
+            path: "user",
+            select: "firstName lastName",
+          },
+          select: "user",
+        },
+        select: "-createdAt -updatedAt -__v",
+      });
+      const tasksData = members.flatMap((member) => member.tasks);
+
+      return res.status(200).json({ tasks: tasksData });
+    } catch (err) {
+      return res.status(500).json({ error: err.message });
+    }
+  },
   createTask: async (req, res) => {
     try {
       const { team, body: data } = req;
