@@ -7,6 +7,7 @@ router.use(authMiddleware.verifyToken);
 router.param("teamId", teamMiddleware.verifyTeamId);
 router.param("memberId", teamMiddleware.verifyMemberId);
 router.param("projectId", teamMiddleware.verifyProjectId);
+router.param("taskId", teamMiddleware.verifyTaskId);
 
 router.get("/teams", teamController.getUserTeams);
 router.get("/teams/:teamId", teamController.getTeamById);
@@ -23,6 +24,9 @@ router.get("/projects", teamController.getUserProjects);
 router.post("/teams/:teamId/projects", teamMiddleware.checkPermission(["Manager", "Co-Manager"]), teamController.createProject);
 router.put("/teams/:teamId/projects/:projectId", teamController.updateProject);
 
+router.get("/tasks", teamController.getUserTasks);
+
+router.get("/announcements", teamController.getUserAnnouncements);
 router.post("/teams/:teamId/announcements", teamMiddleware.checkPermission(["Manager", "Co-Manager"]), teamController.createAnnouncement);
 
 module.exports = router;
