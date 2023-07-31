@@ -262,6 +262,18 @@ const teamController = {
       return res.status(500).json({ error: "Internal server error. Please try again later." });
     }
   },
+  getUserAnnouncements: async (req, res) => {
+    try {
+      const { user } = req;
+
+      const teams = await Team.find({ _id: { $in: user.teams } });
+      const announcements = await Promise.all(teams.map(async (team) => await team.getAnnouncements()));
+
+      return res.status(200).json({ announcements: announcements.flat() });
+    } catch (err) {
+      return res.status(500).json({ error: "Internal server error. Please try again later." });
+    }
+  },
   createAnnouncement: async (req, res) => {
     try {
       const { team, user, body: data } = req;
