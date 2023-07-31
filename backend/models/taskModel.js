@@ -10,17 +10,18 @@ const taskSchema = new mongoose.Schema(
     },
     name: {
       type: String,
-      required: true,
-      maxlength: 50,
+      maxlength: [50, "Task name cannot exceed 50 characters."],
+      required: [true, "Please provide task name."],
     },
     description: {
       type: String,
-      required: true,
-      maxlength: 200,
+      maxlength: [200, "Task description cannot exceed 200 characters."],
+      required: [true, "Please provide task description."],
     },
     assignedTo: {
       type: Schema.Types.ObjectId,
       ref: "Member",
+      required: true,
     },
     isCompleted: {
       type: Boolean,
