@@ -178,4 +178,31 @@ teamSchema.methods.getAnnouncements = async function () {
   return this.announcements;
 };
 
+teamSchema.methods.getTasks = async function () {
+  await this.populate({
+    path: "tasks",
+    populate: {
+      path: "assignedTo",
+      populate: {
+        path: "user",
+        select: "firstName lastName",
+      },
+      select: "user",
+    },
+    select: "-createdAt -updatedAt -__v",
+  });
+
+  return this.tasks;
+};
+
+teamSchema.methods.addTask = async function (taskId) {
+  this.tasks.push(taskId);
+  await this.save();
+};
+
+teamSchema.methods.removeTask = async function (taskId) {
+  this.tasks.pull(taskId);
+  await this.save();
+};
+
 module.exports = mongoose.model("Team", teamSchema);
