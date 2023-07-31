@@ -23,6 +23,10 @@ const taskSchema = new mongoose.Schema(
       ref: "Member",
       required: true,
     },
+    deadline: {
+      type: Date,
+      required: [true, "Please provide project deadline."],
+    },
     isCompleted: {
       type: Boolean,
       default: false,
