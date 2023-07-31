@@ -276,7 +276,11 @@ const teamController = {
 
       return res.status(201).json({ message: "Announcement created successfully.", announcement });
     } catch (err) {
-      return res.status(500).json({ error: err.message });
+      if (err.name === "ValidationError") {
+        const validationErrors = Object.values(err.errors).map((error) => error.message);
+        return res.status(400).json({ errors: validationErrors });
+      }
+      return res.status(500).json({ error: "Internal server error. Please try again later." });
     }
   },
 };
