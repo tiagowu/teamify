@@ -50,4 +50,14 @@ memberSchema.methods.removeProject = async function (projectId) {
   await this.save();
 };
 
+memberSchema.methods.addTask = async function (taskId) {
+  this.tasks.push(taskId);
+  await this.save();
+};
+
+memberSchema.methods.removeTask = async function (taskId) {
+  this.tasks.pull(taskId);
+  await this.save();
+};
+
 module.exports = mongoose.model("Member", memberSchema);
