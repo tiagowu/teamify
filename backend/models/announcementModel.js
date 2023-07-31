@@ -10,11 +10,12 @@ const announcementSchema = new Schema(
     },
     title: {
       type: String,
-      required: true,
+      maxlength: [50, "Announcement title cannot exceed 50 characters."],
+      required: [true, "Please provide announcement title."],
     },
     content: {
       type: String,
-      required: true,
+      required: [true, "Please provide announcement content."],
     },
     author: {
       type: Schema.Types.ObjectId,
