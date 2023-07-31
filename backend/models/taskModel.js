@@ -31,4 +31,11 @@ const taskSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+taskSchema.statics.createTask = async function (data) {
+  console.log(data);
+  const task = new this(data);
+  await task.save();
+  return task;
+};
+
 module.exports = mongoose.model("Task", taskSchema);
