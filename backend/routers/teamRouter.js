@@ -25,6 +25,8 @@ router.post("/teams/:teamId/projects", teamMiddleware.checkPermission(["Manager"
 router.put("/teams/:teamId/projects/:projectId", teamController.updateProject);
 
 router.get("/tasks", teamController.getUserTasks);
+router.post("/teams/:teamId/tasks", teamMiddleware.checkPermission(["Manager", "Co-Manager"]), teamController.createTask);
+router.put("/teams/:teamId/tasks/:taskId", teamController.updateTask);
 
 router.get("/announcements", teamController.getUserAnnouncements);
 router.post("/teams/:teamId/announcements", teamMiddleware.checkPermission(["Manager", "Co-Manager"]), teamController.createAnnouncement);
