@@ -11,6 +11,7 @@ const memberSchema = new Schema(
     user: {
       type: Schema.Types.ObjectId,
       ref: "User",
+      required: true,
     },
     role: {
       type: String,
@@ -21,6 +22,12 @@ const memberSchema = new Schema(
       {
         type: Schema.Types.ObjectId,
         ref: "Project",
+      },
+    ],
+    tasks: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "Task",
       },
     ],
   },
