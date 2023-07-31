@@ -15,7 +15,11 @@ const userController = {
 
       return res.status(201).json({ message: "Team created successfully.", teamId: team._id });
     } catch (err) {
-      return res.status(500).json({ error: err.message });
+      if (err.name === "ValidationError") {
+        const validationErrors = Object.values(err.errors).map((error) => error.message);
+        return res.status(400).json({ errors: validationErrors });
+      }
+      return res.status(500).json({ error: "Internal server error. Please try again later." });
     }
   },
   joinTeamWithCode: async (req, res) => {
