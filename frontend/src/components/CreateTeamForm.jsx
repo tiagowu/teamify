@@ -20,7 +20,11 @@ const CreateTeamForm = () => {
       const teamId = response.teamId;
       navigate(`/team/${teamId}`, { replace: true });
     } catch (err) {
-      setMessage({ type: "error", content: err.response.data.error });
+      if (err?.response?.data?.errors?.length > 0) {
+        setMessage({ type: "error", content: err.response.data.errors[0] });
+      } else {
+        setMessage({ type: "error", content: err.response.data.error });
+      }
     }
     setData({ name: "", description: "" });
   };
@@ -37,8 +41,8 @@ const CreateTeamForm = () => {
   }, [setMessage]);
 
   const fields = [
-    { id: "create-name", type: "text", label: "Name", name: "name" },
-    { id: "create-description", type: "text", label: "Description", name: "description" },
+    { id: "create-team-name", type: "text", label: "Name", name: "name" },
+    { id: "create-team-description", type: "text", label: "Description", name: "description" },
   ];
 
   return <Form buttonText="Create" data={data} fields={fields} handleChange={handleDataChange} handleSubmit={handleCreateTeam} />;
