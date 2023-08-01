@@ -1,4 +1,4 @@
-const ListSelect = ({ handleChange, label, list, name, selected }) => {
+const ListSelect = ({ handleChange, label, list, name, selected, multiple }) => {
   return (
     <>
       <label className="text-blue-400 text-sm">{label}</label>
@@ -7,11 +7,11 @@ const ListSelect = ({ handleChange, label, list, name, selected }) => {
           <div className="flex items-center m-2 p-2 rounded bg-gray-200" key={item._id}>
             <input
               className="flex-shrink-0 appearance-none bg-white rounded h-5 w-5 m-2 checked:bg-blue-400"
-              type="checkbox"
+              type={multiple ? "checkbox" : "radio"}
               id={`item-${item._id}`}
               name={name}
               value={item._id}
-              checked={selected.includes(item._id.toString())}
+              checked={multiple ? selected.includes(item._id.toString()) : selected === item._id.toString()}
               onChange={handleChange}
             />
             <label
