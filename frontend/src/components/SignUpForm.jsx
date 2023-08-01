@@ -40,12 +40,14 @@ const SignUpForm = () => {
         lastName: capitalizeWords(data.lastName.trim()),
       };
       const response = await signup(modifiedData);
-      setAuth(response);
-      setData({ firstName: "", lastName: "", email: "", password: "" });
+      setAuth({
+        accessToken: response.accessToken,
+        user: response.user,
+      });
       navigate("/dashboard", { replace: true });
       setIsLoading(false);
     } catch (err) {
-      if (err.response.data.errors.length > 0) {
+      if (err?.response?.data?.errors?.length > 0) {
         setMessage({ type: "error", content: err.response.data.errors[0] });
       } else {
         setMessage({ type: "error", content: err.response.data.error });
