@@ -49,7 +49,7 @@ const CreateProjectForm = ({ members }) => {
   };
 
   const renderAdditionalFields = () => {
-    return <ListSelect handleChange={handleDataChange} label="Members" list={members} name="members" selected={data.members} />;
+    return <ListSelect handleChange={handleDataChange} label="Members" list={members} name="members" selected={data.members} multiple />;
   };
 
   const currentDate = new Date().toISOString().slice(0, 10);
