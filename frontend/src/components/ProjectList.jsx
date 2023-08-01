@@ -4,12 +4,15 @@ import CreateProjectForm from "./CreateProjectForm";
 import DataList from "./DataList";
 import ProjectItem from "./ProjectItem";
 
-const ProjectList = ({ buttons, members, projects }) => {
-  const sortedProjects = projects.sort((a, b) => new Date(a.deadline) - new Date(b.deadline));
+const ProjectList = ({ members, projects, role }) => {
+  let orderedProjects = [];
 
-  const incompleteProjects = sortedProjects.filter((project) => !project.isCompleted);
-  const completedProjects = sortedProjects.filter((project) => project.isCompleted);
-  const orderedProjects = [...incompleteProjects, ...completedProjects];
+  if (projects && projects.length > 0) {
+    const sortedProjects = projects.sort((a, b) => new Date(a.deadline) - new Date(b.deadline));
+    const incompleteProjects = sortedProjects.filter((project) => !project.isCompleted);
+    const completedProjects = sortedProjects.filter((project) => project.isCompleted).sort((a, b) => new Date(b.deadline) - new Date(a.deadline));
+    orderedProjects = [...incompleteProjects, ...completedProjects];
+  }
 
   const projectButtons = [
     {
@@ -22,7 +25,9 @@ const ProjectList = ({ buttons, members, projects }) => {
     },
   ];
 
-  return <DataList buttons={buttons ? projectButtons : []} item={ProjectItem} list={orderedProjects} title="PROJECTS" />;
+  return (
+    <DataList buttons={["Manager", "Co-Manager"].includes(role) ? projectButtons : []} item={ProjectItem} list={orderedProjects} title="PROJECTS" />
+  );
 };
 
 export default ProjectList;
