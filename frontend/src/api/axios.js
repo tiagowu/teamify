@@ -1,36 +1,36 @@
 import axios from "axios";
 
 export const deleteData = async (url, token) => {
-  const res = await axios.delete(`/api/${url}`, {
+  const response = await axios.delete(`/api/${url}`, {
     headers: { Authorization: `Bearer ${token}` },
   });
-  return res;
+  return response.data;
 };
 
 export const getData = async (url, token) => {
-  const res = await axios.get(`/api/${url}`, {
+  const response = await axios.get(`/api/${url}`, {
     headers: { Authorization: `Bearer ${token}` },
   });
-  return res;
+  return response.data;
 };
 
 export const patchData = async (url, post, token) => {
-  const res = await axios.patch(`/api/${url}`, post, {
+  const response = await axios.patch(`/api/${url}`, post, {
     headers: { Authorization: `Bearer ${token}` },
   });
-  return res;
+  return response.data;
 };
 
 export const postData = async (url, post, token) => {
-  const res = await axios.post(`/api/${url}`, post, {
+  const response = await axios.post(`/api/${url}`, post, {
     headers: { Authorization: `Bearer ${token}` },
   });
-  return res;
+  return response.data;
 };
 
 export const putData = async (url, post, token) => {
-  const res = await axios.put(`/api/${url}`, post, {
+  const response = await axios.put(`/api/${url}`, post, {
     headers: { Authorization: `Bearer ${token}` },
   });
-  return res;
+  return response.data;
 };
