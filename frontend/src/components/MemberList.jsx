@@ -1,22 +1,31 @@
 import { MdPersonAddAlt1 } from "react-icons/md";
 
+import PendingRequestForm from "./PendingRequestForm";
 import DataList from "./DataList";
-// import AcceptRequestForm from "./AcceptRequestForm";
 import MemberItem from "./MemberItem";
 
-const MemberList = ({ buttons, members, requests }) => {
+const MemberList = ({ members, role }) => {
   const memberButtons = [
     {
       key: "accept-request",
       icon: <MdPersonAddAlt1 />,
       modal: {
-        title: "Accept Request",
-        // component: <AcceptRequestForm />,
+        title: "Accept Requests",
+        component: <PendingRequestForm />,
       },
     },
   ];
 
-  return <DataList buttons={buttons ? memberButtons : []} item={MemberItem} list={members} title="MEMBERS" vertical />;
+  return (
+    <DataList
+      buttons={["Manager", "Co-Manager"].includes(role) ? memberButtons : []}
+      item={MemberItem}
+      list={members}
+      title="MEMBERS"
+      role={role}
+      vertical
+    />
+  );
 };
 
 export default MemberList;
