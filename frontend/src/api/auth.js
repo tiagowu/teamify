@@ -3,9 +3,7 @@ import { postData } from "./axios";
 export const login = async (data) => {
   try {
     const response = await postData("login", data);
-    const accessToken = response?.data?.accessToken;
-    const user = response?.data?.user;
-    return { accessToken, user };
+    return response;
   } catch (err) {
     throw err;
   }
@@ -14,9 +12,7 @@ export const login = async (data) => {
 export const signup = async (data) => {
   try {
     const response = await postData("signup", data);
-    const accessToken = response?.data?.accessToken;
-    const user = response?.data?.user;
-    return { accessToken, user };
+    return response;
   } catch (err) {
     throw err;
   }
@@ -36,9 +32,7 @@ export const refresh = async () => {
     const response = await postData("refresh-token", {
       withCredentials: true,
     });
-    const accessToken = response?.data?.accessToken;
-    const user = response?.data?.user;
-    return { accessToken, user };
+    return response;
   } catch (err) {
     throw err;
   }
