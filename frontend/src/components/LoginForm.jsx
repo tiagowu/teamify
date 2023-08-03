@@ -25,8 +25,10 @@ const LoginForm = () => {
     try {
       setIsLoading(true);
       const response = await login(data);
-      console.log(response);
-      setAuth(response);
+      setAuth({
+        accessToken: response.accessToken,
+        user: response.user,
+      });
       navigate("/dashboard", { replace: true });
       setIsLoading(false);
     } catch (err) {
