@@ -20,7 +20,6 @@ const NavBar = () => {
       navigate("/", { replace: true });
       setIsLoading(false);
     } catch (err) {
-      console.log(err);
       setIsLoading(false);
     }
   };
