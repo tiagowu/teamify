@@ -33,7 +33,7 @@ const JoinTeamForm = () => {
     setData((prevData) => ({ ...prevData, [name]: value.toUpperCase() }));
   };
 
-  const fields = [{ id: "join-code", type: "text", label: "Code", name: "code", onKeyDown: handleKeyDown, maxLength: 6 }];
+  const fields = [{ id: "join-team-code", type: "text", label: "Code", name: "code", onKeyDown: handleKeyDown, maxLength: 6 }];
 
   const disabled = data.code.length < 6;
 
