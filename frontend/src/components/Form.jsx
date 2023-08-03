@@ -33,6 +33,7 @@ const Form = ({ buttonText, data, disabled, fields, handleChange, handleSubmit, 
           maxLength={field.maxLength ? field.maxLength : null}
           min={field.min ? field.min : null}
           ref={index === 0 ? userRef : null}
+          rows={field.rows ? field.rows : null}
         />
       ))}
       {renderAdditionalFields && renderAdditionalFields()}
