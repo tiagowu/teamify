@@ -4,6 +4,7 @@ import Dashboard from "./pages/Dashboard";
 import Login from "./pages/Login";
 import Missing from "./pages/Missing";
 import SignUp from "./pages/SignUp";
+import Team from "./pages/Team";
 
 import PersistLogin from "./components/PersistLogin";
 import PrivateRoute from "./components/PrivateRoute";
@@ -29,6 +30,7 @@ const App = () => {
             }
           >
             <Route exact path="/dashboard" element={<Dashboard />} />
+            <Route exact path="/team/:teamId" element={<Team />} />
           </Route>
           <Route exact path="*" element={<Missing />} />
         </Route>
