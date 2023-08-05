@@ -2,7 +2,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
 import Dashboard from "./pages/Dashboard";
 import Login from "./pages/Login";
-import Missing from "./pages/Missing";
+import Error from "./pages/Error";
 import SignUp from "./pages/SignUp";
 import Team from "./pages/Team";
 
@@ -32,7 +32,7 @@ const App = () => {
             <Route exact path="/dashboard" element={<Dashboard />} />
             <Route exact path="/team/:teamId" element={<Team />} />
           </Route>
-          <Route exact path="*" element={<Missing />} />
+          <Route exact path="*" element={<Error message="Sorry, this page isn't available." />} />
         </Route>
       </Routes>
     </Router>
