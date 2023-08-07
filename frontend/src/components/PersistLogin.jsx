@@ -28,7 +28,7 @@ const PersistLogin = () => {
     return () => {
       isMounted = false;
     };
-  }, [persist, auth.accessToken, setIsLoading]);
+  }, [auth.accessToken, persist, refresh, setIsLoading]);
 
   return <>{!persist ? <Outlet /> : isLoading ? <Loading /> : <Outlet />}</>;
 };
