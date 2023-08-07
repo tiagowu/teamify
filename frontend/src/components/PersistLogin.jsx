@@ -1,46 +1,34 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { Outlet } from "react-router-dom";
 
-import { refresh } from "../api/auth";
 import useAuth from "../hooks/useAuth";
+import useRefreshToken from "../hooks/useRefreshToken";
 import Loading from "../pages/Loading";
 
 const PersistLogin = () => {
   const [isLoading, setIsLoading] = useState(true);
-  const { auth, setAuth, persist } = useAuth();
-  const isMounted = useRef(true);
+  const { auth, persist } = useAuth();
+  const refresh = useRefreshToken();
 
   useEffect(() => {
+    let isMounted = true;
+
     const verifyRefreshToken = async () => {
       try {
-        const response = await refresh();
-        setAuth({
-          accessToken: response.accessToken,
-          user: response.user,
-        });
+        await refresh();
       } catch (err) {
         console.error(err);
       } finally {
-        setTimeout(() => {
-          if (isMounted.current) {
-            setIsLoading(false);
-          }
-        }, 10);
+        isMounted && setIsLoading(false);
       }
     };
 
-    if (persist && !auth.accessToken && isMounted.current) {
-      verifyRefreshToken();
-    } else {
-      setTimeout(() => {
-        setIsLoading(false);
-      }, 250);
-    }
+    !auth?.accessToken && persist ? verifyRefreshToken() : setIsLoading(false);
 
     return () => {
-      isMounted.current = false;
+      isMounted = false;
     };
-  }, [persist, auth.accessToken, setAuth, setIsLoading]);
+  }, [persist, auth.accessToken, setIsLoading]);
 
   return <>{!persist ? <Outlet /> : isLoading ? <Loading /> : <Outlet />}</>;
 };
