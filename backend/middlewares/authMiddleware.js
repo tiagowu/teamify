@@ -1,5 +1,5 @@
-const User = require("../models/userModel");
 const jwt = require("jsonwebtoken");
+const User = require("../models/userModel");
 
 const authMiddleware = {
   verifyToken: async (req, res, next) => {
@@ -14,18 +14,22 @@ const authMiddleware = {
         return res.status(401).json({ error: "Missing or invalid token. Please authenticate." });
       }
 
-      const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
-      if (!decoded) {
-        return res.status(401).json({ error: "Invalid or expired token. Please authenticate." });
-      }
+      try {
+        const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
+        const user = await User.findOne({ _id: decoded.id });
+        if (!user) {
+          return res.status(401).json({ error: "User not found. Please authenticate." });
+        }
 
-      const user = await User.findOne({ _id: decoded.id });
-      if (!user) {
-        return res.status(401).json({ error: "User not found. Please authenticate." });
+        req.user = user;
+        next();
+      } catch (err) {
+        if (err.name === "TokenExpiredError") {
+          return res.status(401).json({ error: "Token expired." });
+        } else {
+          return res.status(401).json({ error: "Invalid token. Please authenticate." });
+        }
       }
-
-      req.user = user;
-      next();
     } catch (err) {
       return res.status(500).json({ error: "Internal server error. Please try again later." });
     }
