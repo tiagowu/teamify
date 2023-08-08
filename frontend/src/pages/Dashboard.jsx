@@ -50,7 +50,7 @@ const Dashboard = () => {
     };
 
     fetchData();
-  }, [auth.accessToken]);
+  }, [auth.accessToken, setMessage]);
 
   if (!isDataLoaded && message.type === "error" && message.content) {
     return <Error message={message.content} />;
