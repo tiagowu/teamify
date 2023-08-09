@@ -1,19 +1,35 @@
 require("dotenv").config();
 const express = require("express");
-const mongoose = require("mongoose");
+const path = require("path");
 const cookieparser = require("cookie-parser");
-
-const authRouter = require("./routers/authRouter");
-const userRouter = require("./routers/userRouter");
-const teamRouter = require("./routers/teamRouter");
+const cors = require("cors");
+const mongoose = require("mongoose");
 
 const app = express();
+
+const allowedOrigins = ["https://teamify.tiagowu.com"];
+
+const corsOptions = {
+  origin: (origin, callback) => {
+    if (allowedOrigins.includes(origin) || !origin) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+  credentials: true,
+  optionsSuccessStatus: 200,
+};
+
+app.use(cors(corsOptions));
 app.use(express.json());
 app.use(cookieparser());
 
-app.use("/api", authRouter);
-app.use("/api", userRouter);
-app.use("/api", teamRouter);
+app.use("/", express.static(path.join(__dirname, "public")));
+
+app.use("/api", require("./routers/authRouter"));
+app.use("/api", require("./routers/userRouter"));
+app.use("/api", require("./routers/teamRouter"));
 
 const port = process.env.PORT || 5000;
 const mongoURI = process.env.MONGO_URI;
