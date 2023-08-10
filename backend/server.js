@@ -7,7 +7,7 @@ const mongoose = require("mongoose");
 
 const app = express();
 
-const allowedOrigins = ["https://teamify.tiagowu.com"];
+const allowedOrigins = ["https://teamify.tiagowu.com", "https://www.teamify.tiagowu.com", "http://localhost:3000"];
 
 const corsOptions = {
   origin: (origin, callback) => {
@@ -25,8 +25,11 @@ app.use(cors(corsOptions));
 app.use(express.json());
 app.use(cookieparser());
 
-app.use("/", express.static(path.join(__dirname, "public")));
+app.use("/", express.static(path.join(__dirname, "../frontend/public")));
 
+app.get("/", (_, res) => {
+  res.sendFile(path.join(__dirname, "../frontend/public/index.html"));
+});
 app.use("/api", require("./routers/authRouter"));
 app.use("/api", require("./routers/userRouter"));
 app.use("/api", require("./routers/teamRouter"));
