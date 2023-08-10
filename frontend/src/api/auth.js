@@ -29,9 +29,7 @@ export const logout = async () => {
 
 export const refresh = async () => {
   try {
-    const response = await postData("refresh-token", {
-      withCredentials: true,
-    });
+    const response = await postData("refresh-token");
     return response;
   } catch (err) {
     throw err;
