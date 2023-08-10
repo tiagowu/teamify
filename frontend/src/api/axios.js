@@ -2,7 +2,10 @@ import axios from "axios";
 
 const api = axios.create({
   baseURL: process.env.REACT_APP_API_BASE_URL,
+  withCredentials: true,
 });
+
+console.log(process.env.REACT_APP_API_BASE_URL);
 
 export const deleteData = async (url, token) => {
   const response = await api.delete(`/api/${url}`, {
