@@ -25,7 +25,8 @@ const authMiddleware = {
         next();
       } catch (err) {
         if (err.name === "TokenExpiredError") {
-          return res.status(401).json({ error: "Token expired." });
+          // TO-DO: Generate new access token automatically if refresh token is valid
+          return res.status(401).json({ error: "Please refresh the page." });
         } else {
           return res.status(401).json({ error: "Invalid token. Please authenticate." });
         }
