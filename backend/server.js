@@ -4,6 +4,7 @@ const path = require("path");
 const cookieparser = require("cookie-parser");
 const cors = require("cors");
 const mongoose = require("mongoose");
+const job = require("./cron");
 
 const app = express();
 
@@ -33,6 +34,8 @@ app.get("/", (_, res) => {
 app.use("/api", require("./routers/authRouter"));
 app.use("/api", require("./routers/userRouter"));
 app.use("/api", require("./routers/teamRouter"));
+
+job.start();
 
 const port = process.env.PORT || 5000;
 const mongoURI = process.env.MONGO_URI;
